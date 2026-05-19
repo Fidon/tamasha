@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkin/
+Disallow: /accounts/
+Disallow: /tickets/
+Disallow: /markdownx/
+Disallow: /__debug__/
+
+Sitemap: {{ SITE_DOMAIN }}/sitemap.xml

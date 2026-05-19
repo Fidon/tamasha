@@ -1,0 +1,81 @@
+{#
+  Skeleton loader component.
+
+  Usage:
+    {% include "components/_skeleton.html" with type="card" %}
+    {% include "components/_skeleton.html" with type="text" lines=3 %}
+    {% include "components/_skeleton.html" with type="event-card" %}
+    {% include "components/_skeleton.html" with type="table" rows=5 %}
+
+  Types: card | text | event-card | table | avatar | heading
+#}
+
+{% if type == "card" %}
+  <div class="card p-4" aria-hidden="true">
+    <div class="skeleton mb-3" style="height: 180px; border-radius: var(--radius-md);"></div>
+    <div class="skeleton mb-2" style="height: 18px; width: 70%;"></div>
+    <div class="skeleton mb-2" style="height: 14px; width: 50%;"></div>
+    <div class="skeleton" style="height: 14px; width: 35%;"></div>
+  </div>
+
+{% elif type == "event-card" %}
+  <div class="card overflow-hidden" aria-hidden="true">
+    <div class="skeleton" style="height: 200px; border-radius: 0;"></div>
+    <div class="p-4">
+      <div class="d-flex gap-2 mb-3">
+        <div class="skeleton" style="height: 20px; width: 60px; border-radius: var(--radius-pill);"></div>
+        <div class="skeleton" style="height: 20px; width: 80px; border-radius: var(--radius-pill);"></div>
+      </div>
+      <div class="skeleton mb-2" style="height: 22px; width: 80%;"></div>
+      <div class="skeleton mb-3" style="height: 14px; width: 55%;"></div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="skeleton" style="height: 18px; width: 80px;"></div>
+        <div class="skeleton" style="height: 36px; width: 100px; border-radius: var(--radius-md);"></div>
+      </div>
+    </div>
+  </div>
+
+{% elif type == "text" %}
+  <div aria-hidden="true">
+    {% with lines=lines|default:3 %}
+      {% for i in "xxx"|make_list %}
+        <div class="skeleton mb-2"
+             style="height: 14px; width: {% cycle '90%' '75%' '60%' %};"></div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+{% elif type == "heading" %}
+  <div aria-hidden="true">
+    <div class="skeleton mb-2" style="height: 32px; width: 55%;"></div>
+    <div class="skeleton" style="height: 16px; width: 40%;"></div>
+  </div>
+
+{% elif type == "avatar" %}
+  <div class="d-flex align-items-center gap-3" aria-hidden="true">
+    <div class="skeleton rounded-circle flex-shrink-0" style="width: 40px; height: 40px;"></div>
+    <div class="flex-grow-1">
+      <div class="skeleton mb-1" style="height: 14px; width: 50%;"></div>
+      <div class="skeleton" style="height: 12px; width: 35%;"></div>
+    </div>
+  </div>
+
+{% elif type == "table" %}
+  <div aria-hidden="true">
+    {% with rows=rows|default:5 %}
+      <div class="skeleton mb-3" style="height: 16px; width: 100%;"></div>
+      {% for i in "xxxxx"|make_list %}
+        <div class="d-flex gap-3 mb-2">
+          <div class="skeleton" style="height: 14px; flex: 2;"></div>
+          <div class="skeleton" style="height: 14px; flex: 1;"></div>
+          <div class="skeleton" style="height: 14px; flex: 1;"></div>
+          <div class="skeleton" style="height: 14px; flex: 1;"></div>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+{% else %}
+  {# Fallback: single line #}
+  <div class="skeleton" style="height: 16px; width: 100%;" aria-hidden="true"></div>
+{% endif %}

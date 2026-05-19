@@ -1,0 +1,79 @@
+{% load static %}
+<footer role="contentinfo" style="background-color: var(--color-bg-card); border-top: 0.5px solid var(--color-border-subtle); margin-top: auto;">
+  <div class="container py-5">
+    <div class="row gy-4">
+
+      {# ── Brand column ── #}
+      <div class="col-12 col-md-4">
+        <a href="{% url 'core:home' %}" class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none" aria-label="{{ SITE_NAME }} home">
+          <span class="fw-bold text-gold" style="font-size: var(--text-xl); letter-spacing: -0.02em;">Tamasha</span>
+          <span class="label-uppercase" style="color: var(--color-text-muted); font-size: 0.6rem;">Events</span>
+        </a>
+        <p class="mb-3" style="font-size: var(--text-sm); color: var(--color-text-secondary); max-width: 260px;">
+          Premium event ticketing for concerts, festivals, nightlife, and curated events in Tanzania.
+        </p>
+        <div class="d-flex gap-3">
+          <a href="#" class="footer-social-link" aria-label="Tamasha on Instagram">
+            <i class="bi bi-instagram" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer-social-link" aria-label="Tamasha on X (Twitter)">
+            <i class="bi bi-twitter-x" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer-social-link" aria-label="Tamasha on Facebook">
+            <i class="bi bi-facebook" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      {# ── Discover column ── #}
+      <div class="col-6 col-md-2 offset-md-1">
+        <h6 class="label-uppercase mb-3">Discover</h6>
+        <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+          <li><a href="{% url 'events:list' %}" class="footer-link">Browse Events</a></li>
+          <li><a href="{% url 'events:list' %}?category=concerts" class="footer-link">Concerts</a></li>
+          <li><a href="{% url 'events:list' %}?category=nightlife" class="footer-link">Nightlife</a></li>
+          <li><a href="{% url 'events:list' %}?category=festivals" class="footer-link">Festivals</a></li>
+          <li><a href="{% url 'events:list' %}?category=conferences" class="footer-link">Conferences</a></li>
+        </ul>
+      </div>
+
+      {# ── Organizers column ── #}
+      <div class="col-6 col-md-2">
+        <h6 class="label-uppercase mb-3">Organizers</h6>
+        <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+          {% if user.is_authenticated and user.is_approved_organizer %}
+            <li><a href="{% url 'dashboard:organizer' %}" class="footer-link">Dashboard</a></li>
+            <li><a href="{% url 'events:create' %}" class="footer-link">Create Event</a></li>
+          {% else %}
+            <li><a href="{% url 'accounts:become_organizer' %}" class="footer-link">Become an Organizer</a></li>
+          {% endif %}
+          <li><a href="{% url 'core:help' %}" class="footer-link">Help Center</a></li>
+        </ul>
+      </div>
+
+      {# ── Company column ── #}
+      <div class="col-6 col-md-2">
+        <h6 class="label-uppercase mb-3">Company</h6>
+        <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+          <li><a href="{% url 'core:about' %}" class="footer-link">About</a></li>
+          <li><a href="{% url 'core:contact' %}" class="footer-link">Contact</a></li>
+          <li><a href="{% url 'core:terms' %}" class="footer-link">Terms of Service</a></li>
+          <li><a href="{% url 'core:privacy' %}" class="footer-link">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    {# ── Bottom bar ── #}
+    <div class="divider mt-5 mb-4"></div>
+    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+      <p class="mb-0" style="font-size: var(--text-xs); color: var(--color-text-muted);">
+        &copy; {% now "Y" %} {{ SITE_NAME }}. All rights reserved.
+      </p>
+      <p class="mb-0" style="font-size: var(--text-xs); color: var(--color-text-muted);">
+        Made with <i class="bi bi-heart-fill" style="color: var(--color-danger-text); font-size: 0.6rem;" aria-label="love"></i> in Tanzania
+      </p>
+    </div>
+
+  </div>
+</footer>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ SITE_NAME }} — Premium Event Ticketing in Tanzania{% endblock %}
+{% block meta_description %}Discover and book tickets for concerts, festivals, nightlife, and curated events in Tanzania. Premium event ticketing on {{ SITE_NAME }}.{% endblock %}
+
+{% block content %}
+<section class="section d-flex align-items-center" style="min-height: 70vh;">
+  <div class="container text-center">
+    <span class="gold-line d-block mx-auto mb-4"></span>
+    <h1 class="mb-4">
+      Premium Events.<br>
+      <span class="text-gold">Seamless Tickets.</span>
+    </h1>
+    <p class="text-secondary mb-5 mx-auto" style="max-width: 480px; font-size: var(--text-lg);">
+      Discover concerts, festivals, nightlife, and curated events across Tanzania.
+    </p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'events:list' %}" class="btn btn-primary btn-lg btn-icon">
+        <i class="bi bi-search" aria-hidden="true"></i> Browse Events
+      </a>
+      <a href="{% url 'accounts:signup' %}" class="btn btn-outline-primary btn-lg">
+        Get Started
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

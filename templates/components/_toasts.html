@@ -1,0 +1,56 @@
+{% if messages %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3" aria-live="polite" aria-atomic="true">
+  {% for message in messages %}
+
+    {% if message.tags == 'success' %}
+      <div class="toast align-items-center show mb-2"
+           role="alert" aria-live="assertive" aria-atomic="true"
+           data-bs-autohide="true" data-bs-delay="5000"
+           style="background:var(--color-success-bg);border-color:var(--color-success-border);min-width:280px;max-width:360px;">
+        <div class="d-flex align-items-center gap-2 p-3">
+          <i class="bi bi-check-circle flex-shrink-0" style="color:var(--color-success-text);font-size:var(--text-lg);" aria-hidden="true"></i>
+          <span class="flex-grow-1 text-sm" style="color:var(--color-success-text);">{{ message }}</span>
+          <button type="button" class="btn-close ms-2 flex-shrink-0" data-bs-dismiss="toast" aria-label="Dismiss notification"></button>
+        </div>
+      </div>
+
+    {% elif message.tags == 'error' or message.tags == 'danger' %}
+      <div class="toast align-items-center show mb-2"
+           role="alert" aria-live="assertive" aria-atomic="true"
+           data-bs-autohide="true" data-bs-delay="5000"
+           style="background:var(--color-danger-bg);border-color:var(--color-danger-border);min-width:280px;max-width:360px;">
+        <div class="d-flex align-items-center gap-2 p-3">
+          <i class="bi bi-exclamation-circle flex-shrink-0" style="color:var(--color-danger-text);font-size:var(--text-lg);" aria-hidden="true"></i>
+          <span class="flex-grow-1 text-sm" style="color:var(--color-danger-text);">{{ message }}</span>
+          <button type="button" class="btn-close ms-2 flex-shrink-0" data-bs-dismiss="toast" aria-label="Dismiss notification"></button>
+        </div>
+      </div>
+
+    {% elif message.tags == 'warning' %}
+      <div class="toast align-items-center show mb-2"
+           role="alert" aria-live="assertive" aria-atomic="true"
+           data-bs-autohide="true" data-bs-delay="5000"
+           style="background:var(--color-warning-bg);border-color:var(--color-warning-border);min-width:280px;max-width:360px;">
+        <div class="d-flex align-items-center gap-2 p-3">
+          <i class="bi bi-exclamation-triangle flex-shrink-0" style="color:var(--color-warning-text);font-size:var(--text-lg);" aria-hidden="true"></i>
+          <span class="flex-grow-1 text-sm" style="color:var(--color-warning-text);">{{ message }}</span>
+          <button type="button" class="btn-close ms-2 flex-shrink-0" data-bs-dismiss="toast" aria-label="Dismiss notification"></button>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="toast align-items-center show mb-2"
+           role="alert" aria-live="assertive" aria-atomic="true"
+           data-bs-autohide="true" data-bs-delay="5000"
+           style="background:var(--color-info-bg);border-color:var(--color-info-border);min-width:280px;max-width:360px;">
+        <div class="d-flex align-items-center gap-2 p-3">
+          <i class="bi bi-info-circle flex-shrink-0" style="color:var(--color-info-text);font-size:var(--text-lg);" aria-hidden="true"></i>
+          <span class="flex-grow-1 text-sm" style="color:var(--color-info-text);">{{ message }}</span>
+          <button type="button" class="btn-close ms-2 flex-shrink-0" data-bs-dismiss="toast" aria-label="Dismiss notification"></button>
+        </div>
+      </div>
+    {% endif %}
+
+  {% endfor %}
+</div>
+{% endif %}

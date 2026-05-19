@@ -1,0 +1,567 @@
+/* ============================================================
+   TAMASHA EVENTS — Dual Theme Design Token System
+   Pure CSS custom properties with light + dark mode support.
+
+   USAGE:
+   1. Link this file BEFORE bootstrap.min.css in your <head>
+   2. Theme switching: toggle data-theme="light" | "dark" on <html>
+   3. System preference is respected automatically as the fallback.
+
+   <html data-theme="dark">   ← explicit override
+   <html>                     ← follows OS preference
+   ============================================================ */
+
+
+/* ============================================================
+   SHARED — values that never change between themes
+   ============================================================ */
+:root {
+
+  /* Brand identity — immutable */
+  --tamasha-gold:           #C9A84C;
+  --tamasha-gold-light:     #E8C96A;
+  --tamasha-gold-deep:      #8A6A1E;
+  --tamasha-gold-subtle:    rgba(201, 168, 76, 0.10);
+  --tamasha-gold-border:    rgba(201, 168, 76, 0.25);
+
+  /* Semantic — same hue in both themes, bg/border shift per theme */
+  --color-success:          #5DBB63;
+  --color-danger:           #E05252;
+  --color-warning:          #E8A020;
+  --color-info:             #7B68EE;
+
+  /* Radius scale */
+  --radius-xs:              4px;
+  --radius-sm:              6px;
+  --radius-md:              8px;
+  --radius-lg:              12px;
+  --radius-xl:              16px;
+  --radius-2xl:             24px;
+  --radius-pill:            999px;
+
+  /* Spacing scale (8px base) */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Z-index scale */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /* Typography */
+  --font-sans: 'Inter', 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+
+/* ============================================================
+   DARK THEME  (default — Tamasha's primary experience)
+   ============================================================ */
+:root,
+[data-theme="dark"] {
+
+  /* Surfaces */
+  --color-bg-base:          #0D0D0D;
+  --color-bg-card:          #141414;
+  --color-bg-card-raised:   #1F1F1F;
+  --color-bg-input:         #1A1A1A;
+  --color-bg-input-focus:   #222222;
+  --color-bg-overlay:       #252525;
+  --color-bg-skeleton:      #1F1F1F;
+
+  /* Text */
+  --color-text-primary:     #F0EBE0;
+  --color-text-secondary:   #CCCCCC;
+  --color-text-muted:       #888888;
+  --color-text-disabled:    #555555;
+  --color-text-inverse:     #0D0D0D;
+  --color-text-gold:        #C9A84C;
+  --color-text-gold-hover:  #E8C96A;
+  --color-text-link:        #C9A84C;
+  --color-text-link-hover:  #E8C96A;
+
+  /* Borders */
+  --color-border-subtle:    #1F1F1F;
+  --color-border-default:   #2A2A2A;
+  --color-border-strong:    #3D3D3D;
+
+  /* Semantic backgrounds */
+  --color-success-bg:       #1C2E1A;
+  --color-success-border:   #2E4A2C;
+  --color-success-text:     #5DBB63;
+  --color-danger-bg:        #2A1A1A;
+  --color-danger-border:    #4A2424;
+  --color-danger-text:      #E05252;
+  --color-warning-bg:       #2A2010;
+  --color-warning-border:   #4A3818;
+  --color-warning-text:     #E8A020;
+  --color-info-bg:          #1A1A2E;
+  --color-info-border:      #2E2C4A;
+  --color-info-text:        #7B68EE;
+
+  /* Buttons */
+  --btn-primary-bg:         #C9A84C;
+  --btn-primary-bg-hover:   #E8C96A;
+  --btn-primary-bg-active:  #A8882E;
+  --btn-primary-text:       #0D0D0D;
+  --btn-secondary-bg:       transparent;
+  --btn-secondary-bg-hover: #1F1F1F;
+  --btn-secondary-bg-active:#2A2A2A;
+  --btn-secondary-text:     #F0EBE0;
+  --btn-secondary-border:   #3D3D3D;
+
+  /* Inputs */
+  --input-bg:               #1A1A1A;
+  --input-bg-focus:         #222222;
+  --input-border:           #2A2A2A;
+  --input-border-focus:     #C9A84C;
+  --input-text:             #F0EBE0;
+  --input-placeholder:      #555555;
+  --input-ring-focus:       rgba(201, 168, 76, 0.20);
+
+  /* Navigation */
+  --nav-bg:                 rgba(13, 13, 13, 0.80);
+  --nav-border:             #2A2A2A;
+  --nav-text:               #CCCCCC;
+  --nav-text-active:        #F0EBE0;
+  --nav-text-hover:         #F0EBE0;
+  --nav-indicator:          #C9A84C;
+
+  /* Cards */
+  --card-bg:                #141414;
+  --card-bg-hover:          #1A1A1A;
+  --card-border:            #2A2A2A;
+  --card-border-hover:      #3D3D3D;
+  --card-border-featured:   rgba(201, 168, 76, 0.25);
+  --card-radius:            12px;
+
+  /* Ticket */
+  --ticket-bg:              #141414;
+  --ticket-border:          #2A2A2A;
+  --ticket-perforation:     #2A2A2A;
+  --ticket-price:           #C9A84C;
+  --ticket-qr-bg:           #F0EBE0;
+  --ticket-qr-fg:           #0D0D0D;
+
+  /* Shadows */
+  --shadow-sm:              0 1px 3px rgba(0, 0, 0, 0.50);
+  --shadow-md:              0 4px 12px rgba(0, 0, 0, 0.60);
+  --shadow-lg:              0 8px 32px rgba(0, 0, 0, 0.70);
+  --shadow-gold:            0 0 24px rgba(201, 168, 76, 0.12);
+
+  /* Bootstrap 5 overrides — dark */
+  --bs-body-bg:             #0D0D0D;
+  --bs-body-color:          #F0EBE0;
+  --bs-primary:             #C9A84C;
+  --bs-primary-rgb:         201, 168, 76;
+  --bs-secondary:           #3D3D3D;
+  --bs-secondary-rgb:       61, 61, 61;
+  --bs-success:             #5DBB63;
+  --bs-success-rgb:         93, 187, 99;
+  --bs-danger:              #E05252;
+  --bs-danger-rgb:          224, 82, 82;
+  --bs-warning:             #E8A020;
+  --bs-warning-rgb:         232, 160, 32;
+  --bs-info:                #7B68EE;
+  --bs-info-rgb:            123, 104, 238;
+  --bs-light:               #2A2A2A;
+  --bs-light-rgb:           42, 42, 42;
+  --bs-dark:                #0D0D0D;
+  --bs-dark-rgb:            13, 13, 13;
+  --bs-border-color:        #2A2A2A;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.08);
+  --bs-link-color:          #C9A84C;
+  --bs-link-hover-color:    #E8C96A;
+}
+
+
+/* ============================================================
+   LIGHT THEME
+   Tamasha in daylight — premium editorial, not washed-out.
+   Ivory background keeps warmth; gold reads richer on light.
+   ============================================================ */
+[data-theme="light"],
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+
+    /* Surfaces */
+    --color-bg-base:          #F5F0E8;
+    --color-bg-card:          #FFFFFF;
+    --color-bg-card-raised:   #FAFAF7;
+    --color-bg-input:         #FFFFFF;
+    --color-bg-input-focus:   #FFFDF7;
+    --color-bg-overlay:       #F0EBE0;
+    --color-bg-skeleton:      #EDE8DF;
+
+    /* Text */
+    --color-text-primary:     #0D0D0D;
+    --color-text-secondary:   #3D3D3D;
+    --color-text-muted:       #777777;
+    --color-text-disabled:    #AAAAAA;
+    --color-text-inverse:     #FFFFFF;
+    --color-text-gold:        #8A6A1E;
+    --color-text-gold-hover:  #6B5016;
+    --color-text-link:        #8A6A1E;
+    --color-text-link-hover:  #6B5016;
+
+    /* Borders */
+    --color-border-subtle:    #EDE8DF;
+    --color-border-default:   #D8D0C4;
+    --color-border-strong:    #B8AFA0;
+
+    /* Semantic backgrounds — desaturated for light mode readability */
+    --color-success-bg:       #EAF7EB;
+    --color-success-border:   #B8E4BB;
+    --color-success-text:     #2A7A2E;
+    --color-danger-bg:        #FDF0F0;
+    --color-danger-border:    #F0BEBE;
+    --color-danger-text:      #A32020;
+    --color-warning-bg:       #FDF6E8;
+    --color-warning-border:   #F0D898;
+    --color-warning-text:     #8A5A08;
+    --color-info-bg:          #F0EEFF;
+    --color-info-border:      #C8C0F8;
+    --color-info-text:        #4A3AAA;
+
+    /* Buttons */
+    --btn-primary-bg:         #C9A84C;
+    --btn-primary-bg-hover:   #A8882E;
+    --btn-primary-bg-active:  #8A6A1E;
+    --btn-primary-text:       #FFFFFF;
+    --btn-secondary-bg:       transparent;
+    --btn-secondary-bg-hover: #F0EBE0;
+    --btn-secondary-bg-active:#EDE8DF;
+    --btn-secondary-text:     #0D0D0D;
+    --btn-secondary-border:   #D8D0C4;
+
+    /* Inputs */
+    --input-bg:               #FFFFFF;
+    --input-bg-focus:         #FFFDF7;
+    --input-border:           #D8D0C4;
+    --input-border-focus:     #C9A84C;
+    --input-text:             #0D0D0D;
+    --input-placeholder:      #AAAAAA;
+    --input-ring-focus:       rgba(201, 168, 76, 0.18);
+
+    /* Navigation */
+    --nav-bg:                 rgba(245, 240, 232, 0.85);
+    --nav-border:             #D8D0C4;
+    --nav-text:               #3D3D3D;
+    --nav-text-active:        #0D0D0D;
+    --nav-text-hover:         #0D0D0D;
+    --nav-indicator:          #C9A84C;
+
+    /* Cards */
+    --card-bg:                #FFFFFF;
+    --card-bg-hover:          #FAFAF7;
+    --card-border:            #D8D0C4;
+    --card-border-hover:      #B8AFA0;
+    --card-border-featured:   rgba(138, 106, 30, 0.30);
+    --card-radius:            12px;
+
+    /* Ticket */
+    --ticket-bg:              #FFFFFF;
+    --ticket-border:          #D8D0C4;
+    --ticket-perforation:     #D8D0C4;
+    --ticket-price:           #8A6A1E;
+    --ticket-qr-bg:           #0D0D0D;
+    --ticket-qr-fg:           #FFFFFF;
+
+    /* Shadows — softer on light */
+    --shadow-sm:              0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md:              0 4px 12px rgba(0, 0, 0, 0.10);
+    --shadow-lg:              0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-gold:            0 0 24px rgba(201, 168, 76, 0.20);
+
+    /* Bootstrap 5 overrides — light */
+    --bs-body-bg:             #F5F0E8;
+    --bs-body-color:          #0D0D0D;
+    --bs-primary:             #C9A84C;
+    --bs-primary-rgb:         201, 168, 76;
+    --bs-secondary:           #888888;
+    --bs-secondary-rgb:       136, 136, 136;
+    --bs-success:             #2A7A2E;
+    --bs-success-rgb:         42, 122, 46;
+    --bs-danger:              #A32020;
+    --bs-danger-rgb:          163, 32, 32;
+    --bs-warning:             #8A5A08;
+    --bs-warning-rgb:         138, 90, 8;
+    --bs-info:                #4A3AAA;
+    --bs-info-rgb:            74, 58, 170;
+    --bs-light:               #F0EBE0;
+    --bs-light-rgb:           240, 235, 224;
+    --bs-dark:                #0D0D0D;
+    --bs-dark-rgb:            13, 13, 13;
+    --bs-border-color:        #D8D0C4;
+    --bs-border-color-translucent: rgba(0, 0, 0, 0.08);
+    --bs-link-color:          #8A6A1E;
+    --bs-link-hover-color:    #6B5016;
+  }
+}
+
+/* Explicit [data-theme="light"] always wins over media query */
+[data-theme="light"] {
+  --color-bg-base:          #F5F0E8;
+  --color-bg-card:          #FFFFFF;
+  --color-bg-card-raised:   #FAFAF7;
+  --color-bg-input:         #FFFFFF;
+  --color-bg-input-focus:   #FFFDF7;
+  --color-bg-overlay:       #F0EBE0;
+  --color-bg-skeleton:      #EDE8DF;
+  --color-text-primary:     #0D0D0D;
+  --color-text-secondary:   #3D3D3D;
+  --color-text-muted:       #777777;
+  --color-text-disabled:    #AAAAAA;
+  --color-text-inverse:     #FFFFFF;
+  --color-text-gold:        #8A6A1E;
+  --color-text-gold-hover:  #6B5016;
+  --color-text-link:        #8A6A1E;
+  --color-text-link-hover:  #6B5016;
+  --color-border-subtle:    #EDE8DF;
+  --color-border-default:   #D8D0C4;
+  --color-border-strong:    #B8AFA0;
+  --color-success-bg:       #EAF7EB;
+  --color-success-border:   #B8E4BB;
+  --color-success-text:     #2A7A2E;
+  --color-danger-bg:        #FDF0F0;
+  --color-danger-border:    #F0BEBE;
+  --color-danger-text:      #A32020;
+  --color-warning-bg:       #FDF6E8;
+  --color-warning-border:   #F0D898;
+  --color-warning-text:     #8A5A08;
+  --color-info-bg:          #F0EEFF;
+  --color-info-border:      #C8C0F8;
+  --color-info-text:        #4A3AAA;
+  --btn-primary-bg:         #C9A84C;
+  --btn-primary-bg-hover:   #A8882E;
+  --btn-primary-bg-active:  #8A6A1E;
+  --btn-primary-text:       #FFFFFF;
+  --btn-secondary-bg:       transparent;
+  --btn-secondary-bg-hover: #F0EBE0;
+  --btn-secondary-bg-active:#EDE8DF;
+  --btn-secondary-text:     #0D0D0D;
+  --btn-secondary-border:   #D8D0C4;
+  --input-bg:               #FFFFFF;
+  --input-bg-focus:         #FFFDF7;
+  --input-border:           #D8D0C4;
+  --input-border-focus:     #C9A84C;
+  --input-text:             #0D0D0D;
+  --input-placeholder:      #AAAAAA;
+  --input-ring-focus:       rgba(201, 168, 76, 0.18);
+  --nav-bg:                 rgba(245, 240, 232, 0.85);
+  --nav-border:             #D8D0C4;
+  --nav-text:               #3D3D3D;
+  --nav-text-active:        #0D0D0D;
+  --nav-text-hover:         #0D0D0D;
+  --nav-indicator:          #C9A84C;
+  --card-bg:                #FFFFFF;
+  --card-bg-hover:          #FAFAF7;
+  --card-border:            #D8D0C4;
+  --card-border-hover:      #B8AFA0;
+  --card-border-featured:   rgba(138, 106, 30, 0.30);
+  --ticket-bg:              #FFFFFF;
+  --ticket-border:          #D8D0C4;
+  --ticket-perforation:     #D8D0C4;
+  --ticket-price:           #8A6A1E;
+  --ticket-qr-bg:           #0D0D0D;
+  --ticket-qr-fg:           #FFFFFF;
+  --shadow-sm:              0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md:              0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-lg:              0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-gold:            0 0 24px rgba(201, 168, 76, 0.20);
+  --bs-body-bg:             #F5F0E8;
+  --bs-body-color:          #0D0D0D;
+  --bs-border-color:        #D8D0C4;
+  --bs-link-color:          #8A6A1E;
+  --bs-link-hover-color:    #6B5016;
+}
+
+
+/* ============================================================
+   BOOTSTRAP 5 COMPONENT PATCHES
+   Place these after bootstrap.min.css in your <link> order.
+   ============================================================ */
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+/* Cards */
+.card {
+  background-color: var(--card-bg);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--card-radius);
+  color: var(--color-text-primary);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.card:hover { border-color: var(--card-border-hover); }
+.card.card--featured { border-color: var(--card-border-featured); box-shadow: var(--shadow-gold); }
+
+/* Navbar */
+.navbar {
+  background-color: var(--nav-bg) !important;
+  border-bottom: 0.5px solid var(--nav-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.navbar .nav-link         { color: var(--nav-text); }
+.navbar .nav-link:hover   { color: var(--nav-text-hover); }
+.navbar .nav-link.active  { color: var(--nav-text-active); }
+
+/* Primary button */
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  border-color: transparent;
+  color: var(--btn-primary-text);
+  font-weight: 500;
+}
+.btn-primary:hover        { background-color: var(--btn-primary-bg-hover);  border-color: transparent; color: var(--btn-primary-text); }
+.btn-primary:active       { background-color: var(--btn-primary-bg-active); border-color: transparent; color: var(--btn-primary-text); }
+.btn-primary:focus-visible{ box-shadow: 0 0 0 3px var(--input-ring-focus); }
+
+/* Secondary button */
+.btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  border: 0.5px solid var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
+  font-weight: 500;
+}
+.btn-secondary:hover  { background-color: var(--btn-secondary-bg-hover);  color: var(--btn-secondary-text); }
+.btn-secondary:active { background-color: var(--btn-secondary-bg-active); color: var(--btn-secondary-text); }
+
+/* Outline gold ghost button */
+.btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--tamasha-gold-border);
+  color: var(--color-text-gold);
+}
+.btn-outline-primary:hover {
+  background-color: var(--tamasha-gold-subtle);
+  border-color: var(--tamasha-gold-border);
+  color: var(--color-text-gold-hover);
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+  background-color: var(--input-bg);
+  border: 0.5px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--input-text);
+}
+.form-control::placeholder { color: var(--input-placeholder); }
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--input-bg-focus);
+  border-color: var(--input-border-focus);
+  color: var(--input-text);
+  box-shadow: 0 0 0 3px var(--input-ring-focus);
+}
+
+/* Badges */
+.badge.bg-primary { background-color: var(--tamasha-gold-subtle) !important; color: var(--color-text-gold)    !important; border: 0.5px solid var(--tamasha-gold-border); }
+.badge.bg-success { background-color: var(--color-success-bg)    !important; color: var(--color-success-text) !important; border: 0.5px solid var(--color-success-border); }
+.badge.bg-danger  { background-color: var(--color-danger-bg)     !important; color: var(--color-danger-text)  !important; border: 0.5px solid var(--color-danger-border); }
+.badge.bg-warning { background-color: var(--color-warning-bg)    !important; color: var(--color-warning-text) !important; border: 0.5px solid var(--color-warning-border); }
+.badge.bg-info    { background-color: var(--color-info-bg)       !important; color: var(--color-info-text)    !important; border: 0.5px solid var(--color-info-border); }
+
+/* Alerts */
+.alert-success { background-color: var(--color-success-bg); border-color: var(--color-success-border); color: var(--color-success-text); }
+.alert-danger  { background-color: var(--color-danger-bg);  border-color: var(--color-danger-border);  color: var(--color-danger-text); }
+.alert-warning { background-color: var(--color-warning-bg); border-color: var(--color-warning-border); color: var(--color-warning-text); }
+.alert-info    { background-color: var(--color-info-bg);    border-color: var(--color-info-border);    color: var(--color-info-text); }
+
+/* Dropdowns */
+.dropdown-menu {
+  background-color: var(--color-bg-card-raised);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.dropdown-item             { color: var(--color-text-secondary); }
+.dropdown-item:hover,
+.dropdown-item:focus       { background-color: var(--color-bg-overlay); color: var(--color-text-primary); }
+
+/* Modals */
+.modal-content {
+  background-color: var(--color-bg-card-raised);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-primary);
+}
+.modal-header,
+.modal-footer { border-color: var(--color-border-subtle); }
+
+/* Tables */
+.table {
+  --bs-table-bg:          transparent;
+  --bs-table-color:       var(--color-text-secondary);
+  --bs-table-border-color:var(--color-border-subtle);
+  --bs-table-striped-bg:  var(--color-bg-overlay);
+  --bs-table-hover-bg:    var(--color-bg-overlay);
+}
+.table thead th {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom-color: var(--color-border-default);
+}
+
+/* Pagination */
+.page-link                  { background-color: transparent; border-color: var(--color-border-default); color: var(--color-text-muted); }
+.page-link:hover            { background-color: var(--color-bg-overlay); color: var(--color-text-primary); border-color: var(--color-border-strong); }
+.page-item.active .page-link{ background-color: var(--tamasha-gold); border-color: var(--tamasha-gold); color: #0D0D0D; }
+
+/* Progress */
+.progress       { background-color: var(--color-bg-overlay); border-radius: var(--radius-pill); }
+.progress-bar   { background-color: var(--tamasha-gold); }
+
+/* Toasts */
+.toast {
+  background-color: var(--color-bg-card-raised);
+  border: 0.5px solid var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+/* Divider */
+hr { border-color: var(--color-border-subtle); opacity: 1; }
+
+/* Text utility classes */
+.text-muted        { color: var(--color-text-muted)     !important; }
+.text-secondary    { color: var(--color-text-secondary) !important; }
+.text-gold         { color: var(--color-text-gold)      !important; }
+
+
+/* ============================================================
+   THEME TOGGLE HELPER
+   Wire this JS snippet to your toggle button.
+
+   const toggle = document.getElementById('theme-toggle');
+   toggle.addEventListener('click', () => {
+     const html = document.documentElement;
+     const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+     html.setAttribute('data-theme', next);
+     localStorage.setItem('tamasha-theme', next);
+   });
+
+   On page load, restore preference:
+   const saved = localStorage.getItem('tamasha-theme');
+   const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+   document.documentElement.setAttribute('data-theme', saved || system);
+============================================================ */
