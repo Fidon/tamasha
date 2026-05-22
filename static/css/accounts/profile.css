@@ -1,0 +1,101 @@
+/* ── Profile avatar ──────────────────────────────────────── */
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 2px solid var(--tamasha-gold-border);
+  display: block;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.profile-avatar-placeholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background-color: var(--tamasha-gold-subtle);
+  border: 2px solid var(--tamasha-gold-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-gold);
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+/* ── Visible secondary text in dark mode ─────────────────── */
+.card p.text-muted,
+.card .text-muted,
+.card small,
+.card .form-text {
+  color: var(--color-text-secondary) !important;
+}
+
+.profile-sidebar p,
+.profile-sidebar .text-sm {
+  color: var(--color-text-secondary) !important;
+}
+
+/* ── Sidebar nav ─────────────────────────────────────────── */
+.profile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.profile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.profile-nav-link:hover,
+.profile-nav-link.active {
+  background-color: var(--color-bg-overlay);
+  color: var(--color-text-primary);
+}
+
+.profile-nav-link.active {
+  color: var(--color-text-gold);
+}
+
+/* ── Form label ──────────────────────────────────────────── */
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+/* ── Field error ─────────────────────────────────────────── */
+.field-error {
+  font-size: var(--text-xs);
+  color: var(--color-danger-text);
+  margin-top: var(--space-1);
+  min-height: 16px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 991px) {
+  .profile-sidebar {
+    text-align: center;
+  }
+  .profile-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

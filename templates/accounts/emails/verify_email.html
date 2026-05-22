@@ -1,0 +1,24 @@
+{% extends "accounts/emails/base_email.html" %}
+{% block subject %}Verify your email — {{ site_name }}{% endblock %}
+
+{% block email_body %}
+  <h1 class="email-heading">Verify your email address</h1>
+  <p class="email-text">Hi {{ user.get_short_name }}, welcome to {{ site_name }}.</p>
+  <p class="email-text">
+    To complete your registration and start discovering events, please verify
+    your email address by clicking the button below.
+  </p>
+
+  <div class="email-cta-wrapper">
+    <a href="{{ verify_url }}" class="email-cta">Verify Email Address</a>
+  </div>
+
+  <div class="email-info-box">
+    <p>This link expires in <strong>24 hours</strong>. If you did not create an account on {{ site_name }}, you can safely ignore this email.</p>
+  </div>
+
+  <hr class="email-divider">
+
+  <p class="email-muted">If the button above doesn't work, copy and paste this URL into your browser:</p>
+  <p><a href="{{ verify_url }}" class="email-url-fallback">{{ verify_url }}</a></p>
+{% endblock %}

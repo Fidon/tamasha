@@ -1,16 +1,5 @@
-{#
-  JSON-LD structured data partial.
-
-  Usage in any template's {% block structured_data %}:
-    {% block structured_data %}
-      {% include "seo/_json_ld.html" with schemas=structured_data %}
-    {% endblock %}
-
-  `structured_data` must be a list of pre-rendered safe strings
-  produced by apps.seo.structured_data.render_json_ld().
-#}
-{% if schemas %}
-  {% for schema in schemas %}
+{% if structured_data %}
+  {% for schema in structured_data %}
     {{ schema }}
   {% endfor %}
 {% endif %}

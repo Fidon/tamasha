@@ -1,0 +1,32 @@
+{% extends "accounts/emails/base_email.html" %}
+{% block subject %}Update on your organizer application — {{ site_name }}{% endblock %}
+
+{% block email_body %}
+  <h1 class="email-heading">Application update.</h1>
+  <p class="email-text">Hi {{ user.get_short_name }},</p>
+  <p class="email-text">
+    Thank you for applying to become an organizer on {{ site_name }}. After
+    reviewing your application, we're unable to approve it at this time.
+  </p>
+
+  <div class="email-danger-box">
+    <p><strong>Reason:</strong> {{ rejection_reason }}</p>
+  </div>
+
+  <p class="email-text">
+    You're welcome to address the feedback above and submit a new application
+    whenever you're ready. There is no waiting period.
+  </p>
+
+  <div class="email-cta-wrapper">
+    <a href="{{ reapply_url }}" class="email-cta">Submit a New Application</a>
+  </div>
+
+  <hr class="email-divider">
+
+  <p class="email-text">
+    If you have questions about this decision, please reach out via our
+    <a href="{{ site_domain }}/contact/" style="color:#C9A84C;text-decoration:none;">contact page</a>.
+  </p>
+  <p class="email-text" style="color:#F0EBE0;font-weight:600;">The {{ site_name }} Team</p>
+{% endblock %}

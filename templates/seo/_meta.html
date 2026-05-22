@@ -1,12 +1,5 @@
-{#
-  SEO meta partial.
-  Consumed by base.html {% block seo %}.
-  Variables injected by SEOMixin or directly in view context.
-
-  Falls back to site-level defaults from context processors
-  when view-specific values are absent.
-#}
-<title>{% block title %}{% if seo_title %}{{ seo_title }}{% else %}{{ SITE_NAME }}{% endif %}{% endblock %}</title>
+{% load static %}
+<title>{% if seo_title %}{{ seo_title }}{% else %}{{ SITE_NAME }}{% endif %}</title>
 <meta name="description" content="{% if seo_description %}{{ seo_description }}{% else %}{{ SITE_DESCRIPTION }}{% endif %}">
 <link rel="canonical" href="{% if seo_canonical %}{{ seo_canonical }}{% else %}{{ SITE_DOMAIN }}{{ request.path }}{% endif %}">
 <meta name="robots" content="{% if seo_robots %}{{ seo_robots }}{% else %}index, follow{% endif %}">
@@ -17,7 +10,7 @@
 <meta property="og:title"       content="{% if seo_title %}{{ seo_title }}{% else %}{{ SITE_NAME }}{% endif %}">
 <meta property="og:description" content="{% if seo_description %}{{ seo_description }}{% else %}{{ SITE_DESCRIPTION }}{% endif %}">
 <meta property="og:url"         content="{% if seo_canonical %}{{ seo_canonical }}{% else %}{{ SITE_DOMAIN }}{{ request.path }}{% endif %}">
-<meta property="og:image"       content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% load static %}{% static 'images/og-default.jpg' %}{% endif %}">
+<meta property="og:image"       content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% static 'images/og-default.jpg' %}{% endif %}">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
 
@@ -25,4 +18,4 @@
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:title"       content="{% if seo_title %}{{ seo_title }}{% else %}{{ SITE_NAME }}{% endif %}">
 <meta name="twitter:description" content="{% if seo_description %}{{ seo_description }}{% else %}{{ SITE_DESCRIPTION }}{% endif %}">
-<meta name="twitter:image"       content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% load static %}{% static 'images/og-default.jpg' %}{% endif %}">
+<meta name="twitter:image"       content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% static 'images/og-default.jpg' %}{% endif %}">

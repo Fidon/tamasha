@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Account Locked — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card text-center">
+    <div class="auth-icon-wrap mb-4">
+      <i class="bi bi-shield-lock" style="font-size: 2.5rem; color: var(--color-danger-text);"></i>
+    </div>
+    <span class="gold-line d-block mx-auto mb-4"></span>
+    <h1 class="auth-title">Account temporarily locked</h1>
+    <p class="auth-subtitle">
+      {{ message }}
+    </p>
+    <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-primary mt-4">
+      Reset your password
+    </a>
+    <p class="mt-4 text-sm text-muted">
+      Need help?
+      <a href="{% url 'core:contact' %}" class="text-gold">Contact support</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/auth.css' %}">
+{% endblock %}

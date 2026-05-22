@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Become an Organizer — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/become_organizer.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+
+      {# ── Header ── #}
+      <div class="mb-5">
+        <span class="gold-line d-block mb-4"></span>
+        <h1 class="mb-2">Become an Organizer</h1>
+        <p class="text-secondary" style="max-width:520px;">
+          Host concerts, festivals, nightlife events, and conferences on Tanzania's
+          premium ticketing platform.
+        </p>
+      </div>
+
+      {# ── Pending state ── #}
+      {% if user.is_pending_organizer %}
+        <div class="card p-4 p-md-5 text-center">
+          <i class="bi bi-hourglass-split mb-3" style="font-size:2.5rem;color:var(--color-warning-text);"></i>
+          <h2 class="h4 mb-2">Application under review</h2>
+          <p class="text-secondary mb-4">
+            Your application was submitted on
+            <strong>{{ latest_request.submitted_at|date:"N j, Y" }}</strong>.
+            We'll notify you by email once a decision is made.
+          </p>
+          <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary">
+            View application status
+          </a>
+        </div>
+
+      {% else %}
+
+        {# ── Rejected notice ── #}
+        {% if latest_request and latest_request.is_rejected %}
+          <div class="alert alert-danger d-flex gap-2 mb-4" role="alert">
+            <i class="bi bi-info-circle flex-shrink-0 mt-1" aria-hidden="true"></i>
+            <div>
+              Your previous application was not approved.
+              <strong>Reason:</strong> {{ latest_request.rejection_reason }}
+              <br>
+              <span class="text-sm">Please address the feedback below and resubmit.</span>
+            </div>
+          </div>
+        {% endif %}
+
+        {# ── Benefits ── #}
+        <div class="row gy-3 mb-5">
+          {% for icon, title, desc in benefits %}
+            <div class="col-12 col-sm-4">
+              <div class="organizer-benefit-card card p-3">
+                <i class="bi bi-{{ icon }} mb-2" style="font-size:1.5rem;color:var(--tamasha-gold);"></i>
+                <h6 class="mb-1" style="color:var(--color-text-primary);">{{ title }}</h6>
+                <p class="text-sm text-muted mb-0">{{ desc }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <div class="col-12 col-sm-4">
+              <div class="organizer-benefit-card card p-3">
+                <i class="bi bi-ticket-perforated mb-2" style="font-size:1.5rem;color:var(--tamasha-gold);"></i>
+                <h6 class="mb-1" style="color:var(--color-text-primary);">Sell Tickets</h6>
+                <p class="text-sm text-muted mb-0">Create multiple ticket types with custom pricing.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="organizer-benefit-card card p-3">
+                <i class="bi bi-graph-up mb-2" style="font-size:1.5rem;color:var(--tamasha-gold);"></i>
+                <h6 class="mb-1" style="color:var(--color-text-primary);">Track Sales</h6>
+                <p class="text-sm text-muted mb-0">Real-time analytics and revenue dashboards.</p>
+              </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <div class="organizer-benefit-card card p-3">
+                <i class="bi bi-qr-code-scan mb-2" style="font-size:1.5rem;color:var(--tamasha-gold);"></i>
+                <h6 class="mb-1" style="color:var(--color-text-primary);">QR Check-in</h6>
+                <p class="text-sm text-muted mb-0">Fast venue check-in via browser camera scanner.</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {# ── Application form ── #}
+        <div class="card p-4 p-md-5">
+          <h2 class="h5 mb-1" style="color:var(--color-text-primary);">Your Application</h2>
+          <p class="text-muted text-sm mb-4">All fields are required unless marked optional.</p>
+
+          <form id="organizer-form" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-4">
+              <label for="id_organization_name" class="form-label">Organization name</label>
+              <input type="text" id="id_organization_name" name="organization_name"
+                     class="form-control" placeholder="Your company or event brand name"
+                     required>
+              <div class="field-error" id="err-organization_name"></div>
+            </div>
+
+            <div class="mb-4">
+              <label for="id_bio" class="form-label">
+                Bio <span class="text-muted" style="font-weight:400;">(optional)</span>
+              </label>
+              <textarea id="id_bio" name="bio" class="form-control" rows="3"
+                        placeholder="Tell us about your organization…"></textarea>
+              <div class="field-error" id="err-bio"></div>
+            </div>
+
+            <div class="row gy-4 mb-4">
+              <div class="col-12 col-md-6">
+                <label for="id_phone" class="form-label">Phone number</label>
+                <input type="tel" id="id_phone" name="phone"
+                       class="form-control" placeholder="+255 7XX XXX XXX">
+                <div class="field-error" id="err-phone"></div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="id_website" class="form-label">
+                  Website <span class="text-muted" style="font-weight:400;">(optional)</span>
+                </label>
+                <input type="url" id="id_website" name="website"
+                       class="form-control" placeholder="https://yourwebsite.com">
+                <div class="field-error" id="err-website"></div>
+              </div>
+            </div>
+
+            <div class="mb-5">
+              <label for="id_pitch" class="form-label">Why do you want to become an organizer?</label>
+              <textarea id="id_pitch" name="pitch" class="form-control" rows="5"
+                        placeholder="Describe the types of events you plan to host, your experience, and your target audience. (Min. 50 characters)"
+                        required></textarea>
+              <div class="form-text text-muted pitch-counter">
+                <span id="pitch-count">0</span> characters
+              </div>
+              <div class="field-error" id="err-pitch"></div>
+            </div>
+
+            <div id="organizer-form-error" class="alert alert-danger d-none mb-4" role="alert"></div>
+
+            <button type="submit" id="organizer-btn" class="btn btn-primary btn-lg w-100 btn-icon">
+              <span class="btn-label">
+                <i class="bi bi-send me-2" aria-hidden="true"></i>Submit Application
+              </span>
+              <span class="btn-spinner d-none">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Submitting…
+              </span>
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/accounts/become_organizer.js' %}" defer></script>
+{% endblock %}

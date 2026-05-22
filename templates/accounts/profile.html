@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row gy-4">
+
+    {# ── Sidebar ── #}
+    <div class="col-12 col-lg-3">
+      <div class="profile-sidebar card p-4">
+
+        {# Avatar #}
+        <div class="text-center mb-4">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name }} avatar"
+                 class="profile-avatar" width="88" height="88">
+          {% else %}
+            <div class="profile-avatar-placeholder">
+              {{ user.get_short_name|first|upper }}
+            </div>
+          {% endif %}
+          <h5 class="mt-3 mb-0" style="color:var(--color-text-primary);">{{ user.get_full_name }}</h5>
+          <p class="text-muted text-sm mt-1 mb-0">{{ user.email }}</p>
+        </div>
+
+        {# Status badges #}
+        <div class="d-flex flex-column gap-2 mb-4">
+          {% if user.email_verified %}
+            <span class="badge bg-success w-100 py-2">
+              <i class="bi bi-check-circle me-1" aria-hidden="true"></i> Email verified
+            </span>
+          {% else %}
+            <span class="badge bg-warning w-100 py-2">
+              <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i> Email unverified
+            </span>
+          {% endif %}
+
+          {% if user.is_approved_organizer %}
+            <span class="badge bg-primary w-100 py-2">
+              <i class="bi bi-star me-1" aria-hidden="true"></i> Organizer
+            </span>
+          {% elif user.is_pending_organizer %}
+            <span class="badge bg-warning w-100 py-2">
+              <i class="bi bi-clock me-1" aria-hidden="true"></i> Application pending
+            </span>
+          {% endif %}
+        </div>
+
+        {# Sidebar nav #}
+        <nav class="profile-nav" aria-label="Profile navigation">
+          <a href="#profile-details" class="profile-nav-link active">
+            <i class="bi bi-person" aria-hidden="true"></i> Profile Details
+          </a>
+          <a href="{% url 'dashboard:buyer' %}" class="profile-nav-link">
+            <i class="bi bi-ticket-perforated" aria-hidden="true"></i> My Tickets
+          </a>
+          {% if user.is_approved_organizer %}
+            <a href="{% url 'dashboard:organizer' %}" class="profile-nav-link">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i> Organizer Dashboard
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:become_organizer' %}" class="profile-nav-link">
+              <i class="bi bi-megaphone" aria-hidden="true"></i> Become an Organizer
+            </a>
+          {% endif %}
+        </nav>
+
+      </div>
+    </div>
+
+    {# ── Main content ── #}
+    <div class="col-12 col-lg-9" id="profile-details">
+
+      {# Profile form #}
+      <div class="card p-4 p-md-5 mb-4">
+        <h2 class="h5 mb-1" style="color:var(--color-text-primary);">Profile Details</h2>
+        <p class="text-muted text-sm mb-4">Update your personal information.</p>
+
+        <form id="profile-form" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="row gy-4">
+            <div class="col-12 col-md-6">
+              <label for="id_full_name" class="form-label">Full name</label>
+              <input type="text" id="id_full_name" name="full_name"
+                     class="form-control" value="{{ user.get_full_name }}"
+                     autocomplete="name" required>
+              <div class="field-error" id="err-full_name"></div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="id_phone" class="form-label">Phone number</label>
+              <input type="tel" id="id_phone" name="phone"
+                     class="form-control" value="{{ user.phone }}"
+                     autocomplete="tel" placeholder="+255 7XX XXX XXX">
+              <div class="field-error" id="err-phone"></div>
+            </div>
+
+            <div class="col-12">
+              <label for="id_avatar" class="form-label">Profile picture</label>
+              <input type="file" id="id_avatar" name="avatar"
+                     class="form-control" accept="image/jpeg,image/png,image/webp">
+              <div class="form-text text-muted">JPEG, PNG or WebP. Max 2 MB.</div>
+              <div class="field-error" id="err-avatar"></div>
+            </div>
+          </div>
+
+          <div id="profile-form-error" class="alert alert-danger d-none mt-4" role="alert"></div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="submit" id="profile-btn" class="btn btn-primary btn-icon">
+              <span class="btn-label">
+                <i class="bi bi-check2 me-1" aria-hidden="true"></i> Save Changes
+              </span>
+              <span class="btn-spinner d-none">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving…
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {# Organizer application status #}
+      {% if latest_organizer_request %}
+        <div class="card p-4 p-md-5">
+          <h2 class="h5 mb-1" style="color:var(--color-text-primary);">Organizer Application</h2>
+          <p class="text-muted text-sm mb-4">Status of your most recent application.</p>
+
+          {% if latest_organizer_request.is_pending %}
+            <div class="alert alert-warning d-flex align-items-center gap-2" role="status">
+              <i class="bi bi-clock-history flex-shrink-0" aria-hidden="true"></i>
+              <div>
+                <strong>Under review</strong> — Your application was submitted on
+                {{ latest_organizer_request.submitted_at|date:"N j, Y" }}.
+                We'll notify you by email once a decision is made.
+              </div>
+            </div>
+
+          {% elif latest_organizer_request.is_approved %}
+            <div class="alert alert-success d-flex align-items-center gap-2" role="status">
+              <i class="bi bi-check-circle flex-shrink-0" aria-hidden="true"></i>
+              <div>
+                <strong>Approved</strong> on {{ latest_organizer_request.reviewed_at|date:"N j, Y" }}.
+                <a href="{% url 'dashboard:organizer' %}" class="text-gold ms-1">Go to dashboard →</a>
+              </div>
+            </div>
+
+          {% elif latest_organizer_request.is_rejected %}
+            <div class="alert alert-danger d-flex gap-2" role="alert">
+              <i class="bi bi-x-circle flex-shrink-0 mt-1" aria-hidden="true"></i>
+              <div>
+                <strong>Not approved</strong> on {{ latest_organizer_request.reviewed_at|date:"N j, Y" }}.
+                <br>
+                <span class="text-sm mt-1 d-block">
+                  <strong>Reason:</strong> {{ latest_organizer_request.rejection_reason }}
+                </span>
+                <a href="{% url 'accounts:become_organizer' %}" class="btn btn-outline-primary btn-sm mt-3">
+                  Submit a new application
+                </a>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/accounts/profile.js' %}" defer></script>
+{% endblock %}

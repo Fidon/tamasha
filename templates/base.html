@@ -19,7 +19,7 @@
 
   {# ── Structured data ── #}
   {% block structured_data %}
-    {% include "seo/_json_ld.html" with schemas=structured_data %}
+    {% include "seo/_json_ld.html" %}
   {% endblock %}
 
   {# ── Preconnect ── #}
@@ -74,7 +74,7 @@
   {# Theme JS must load first — handles FART and toggle binding #}
   <script src="{% static 'js/theme.js' %}"></script>
   <script src="{% static 'vendor/bootstrap.bundle.min.js' %}" defer></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
+  <script src="{% static 'vendor/jquery-3.7.1.min.js' %}" defer></script>
   <script src="{% static 'js/toasts.js' %}" defer></script>
   {% block extra_js %}{% endblock %}
 

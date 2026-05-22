@@ -322,6 +322,16 @@ small,
   }
 }
 
+/* ── Navbar user avatar ──────────────────────────────────── */
+.navbar img.rounded-circle {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+}
+
 /* ── Footer ──────────────────────────────────────────────── */
 .footer-link {
   font-size: var(--text-sm);

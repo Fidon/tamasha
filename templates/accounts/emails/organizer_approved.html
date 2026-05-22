@@ -1,0 +1,33 @@
+{% extends "accounts/emails/base_email.html" %}
+{% block subject %}You're now an organizer on {{ site_name }}{% endblock %}
+
+{% block email_body %}
+  <h1 class="email-heading">Congratulations — you're approved.</h1>
+  <p class="email-text">Hi {{ user.get_short_name }},</p>
+  <p class="email-text">
+    Your organizer application on {{ site_name }} has been reviewed and
+    <strong style="color:#5DBB63;">approved</strong>. You now have full access
+    to create and manage events on our platform.
+  </p>
+
+  <div class="email-info-box">
+    <p>
+      You can now create events, manage ticket types, track sales, and view
+      attendee data — all from your organizer dashboard.
+    </p>
+  </div>
+
+  <div class="email-cta-wrapper">
+    <a href="{{ dashboard_url }}" class="email-cta">Go to Your Dashboard</a>
+  </div>
+
+  <hr class="email-divider">
+
+  <p class="email-text">
+    If you have any questions about getting started, visit our
+    <a href="{{ site_domain }}/help/" style="color:#C9A84C;text-decoration:none;">Help Center</a>
+    or reply to this email.
+  </p>
+  <p class="email-text">Welcome to the team.</p>
+  <p class="email-text" style="color:#F0EBE0;font-weight:600;">The {{ site_name }} Team</p>
+{% endblock %}

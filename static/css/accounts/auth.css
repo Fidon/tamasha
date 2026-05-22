@@ -1,0 +1,148 @@
+/* ── Auth page layout ────────────────────────────────────── */
+.auth-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--card-bg);
+  border: 0.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-10) var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.auth-header {
+  margin-bottom: var(--space-6);
+}
+
+.auth-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+.auth-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+/* ── Form label ──────────────────────────────────────────── */
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary) !important;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Optional label text ─────────────────────────────────── */
+.form-label .text-muted,
+.form-label span[style] {
+  color: var(--color-text-muted) !important;
+  font-size: var(--text-xs);
+}
+
+/* ── Tighten vertical rhythm between field groups ────────── */
+.mb-4 {
+  margin-bottom: var(--space-4) !important;
+}
+.mb-5 {
+  margin-bottom: var(--space-6) !important;
+}
+
+/* ── Field error ─────────────────────────────────────────── */
+.field-error {
+  font-size: var(--text-xs);
+  color: var(--color-danger-text);
+  margin-top: var(--space-1);
+  min-height: 16px;
+}
+
+/* ── Password input wrapper ──────────────────────────────── */
+.input-password-wrapper {
+  position: relative;
+}
+
+.input-password-wrapper .form-control {
+  padding-right: 44px;
+}
+
+.btn-password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--text-base);
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.btn-password-toggle:hover {
+  color: var(--color-text-primary);
+}
+
+/* ── Forgot link ─────────────────────────────────────────── */
+.auth-forgot-link {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted) !important;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.auth-forgot-link:hover {
+  color: var(--color-text-gold) !important;
+}
+
+/* ── Icon wrap (status pages) ────────────────────────────── */
+.auth-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Footer text ─────────────────────────────────────────── */
+.auth-footer-text {
+  text-align: center;
+  margin-top: var(--space-6);
+  margin-bottom: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary) !important;
+}
+
+/* ── Toast close button ──────────────────────────────────── */
+.toast .btn-close {
+  filter: invert(0.6) !important;
+  opacity: 0.8 !important;
+}
+[data-theme="dark"] .toast .btn-close {
+  filter: invert(1) brightness(0.8) !important;
+  opacity: 0.8 !important;
+}
+
+/* ── Button loading state ────────────────────────────────── */
+.btn[disabled] {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 425px) {
+  .auth-card {
+    padding: var(--space-8) var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+}
