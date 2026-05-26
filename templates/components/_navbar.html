@@ -4,9 +4,13 @@
     <div class="container">
 
       {# ── Brand ── #}
-      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}" aria-label="{{ SITE_NAME }} home">
-        <span class="fw-bold text-gold" style="font-size: var(--text-xl); letter-spacing: -0.02em;">Tamasha</span>
-        <span class="label-uppercase" style="color: var(--color-text-muted); font-size: 0.6rem; line-height: 1; padding-top: 2px;">Events</span>
+      <a class="navbar-brand d-flex align-items-center gap-2"
+         href="{% url 'core:home' %}"
+         aria-label="{{ SITE_NAME }} home">
+        <span class="fw-bold text-gold"
+              style="font-size: var(--text-xl); letter-spacing: -0.02em;">Tamasha</span>
+        <span class="label-uppercase"
+              style="color: var(--color-text-muted); font-size: 0.6rem; line-height: 1; padding-top: 2px;">Events</span>
       </a>
 
       {# ── Mobile: theme toggle + hamburger ── #}
@@ -17,7 +21,7 @@
                 aria-pressed="false"
                 style="background: transparent;">
           <i class="bi bi-moon-stars theme-icon-dark {% if current_theme == 'dark' %}d-none{% endif %}" aria-hidden="true"></i>
-          <i class="bi bi-sun theme-icon-light {% if current_theme == 'light' %}d-none{% endif %}" aria-hidden="true"></i>
+          <i class="bi bi-sun        theme-icon-light {% if current_theme == 'light' %}d-none{% endif %}" aria-hidden="true"></i>
         </button>
         <button class="navbar-toggler border-0 p-1"
                 type="button"
@@ -31,7 +35,7 @@
         </button>
       </div>
 
-      {# ── Nav links ── #}
+      {# ── Collapsible nav ── #}
       <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-1" role="list">
           <li class="nav-item" role="listitem">
@@ -42,9 +46,9 @@
             </a>
           </li>
           <li class="nav-item" role="listitem">
-            <a class="nav-link {% if request.resolver_match.namespace == 'events' %}active{% endif %}"
+            <a class="nav-link {% if request.resolver_match.namespace == 'events' and request.resolver_match.url_name != 'create' %}active{% endif %}"
                href="{% url 'events:list' %}"
-               {% if request.resolver_match.namespace == 'events' %}aria-current="page"{% endif %}>
+               {% if request.resolver_match.namespace == 'events' and request.resolver_match.url_name != 'create' %}aria-current="page"{% endif %}>
               Events
             </a>
           </li>
@@ -60,11 +64,22 @@
                   aria-pressed="false"
                   style="background: transparent; color: var(--color-text-muted);">
             <i class="bi bi-moon-stars theme-icon-dark {% if current_theme == 'dark' %}d-none{% endif %}" aria-hidden="true"></i>
-            <i class="bi bi-sun theme-icon-light {% if current_theme == 'light' %}d-none{% endif %}" aria-hidden="true"></i>
+            <i class="bi bi-sun        theme-icon-light {% if current_theme == 'light' %}d-none{% endif %}" aria-hidden="true"></i>
           </button>
 
           {% if user.is_authenticated %}
-            {# ── Authenticated: user menu ── #}
+
+            {# ── Create Event CTA for approved organizers ── #}
+            {% if user.is_approved_organizer %}
+              <a href="{% url 'events:create' %}"
+                 class="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                 aria-label="Create a new event">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span class="d-none d-md-inline">Create Event</span>
+              </a>
+            {% endif %}
+
+            {# ── User menu ── #}
             <div class="dropdown">
               <button class="btn btn-secondary btn-sm d-flex align-items-center gap-2 dropdown-toggle"
                       type="button"
@@ -86,31 +101,51 @@
                 {% endif %}
                 <span class="d-none d-md-inline">{{ user.get_short_name }}</span>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end mt-1" aria-labelledby="userMenuBtn" role="menu">
+
+              <ul class="dropdown-menu dropdown-menu-end mt-1"
+                  aria-labelledby="userMenuBtn"
+                  role="menu">
                 {% if user.is_approved_organizer %}
                   <li role="menuitem">
-                    <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'dashboard:organizer' %}">
-                      <i class="bi bi-speedometer2 text-gold" aria-hidden="true"></i> Dashboard
+                    <a class="dropdown-item d-flex align-items-center gap-2"
+                       href="{% url 'dashboard:organizer' %}">
+                      <i class="bi bi-speedometer2 text-gold" aria-hidden="true"></i>
+                      Dashboard
+                    </a>
+                  </li>
+                  <li role="menuitem">
+                    <a class="dropdown-item d-flex align-items-center gap-2"
+                       href="{% url 'events:create' %}">
+                      <i class="bi bi-calendar-plus text-gold" aria-hidden="true"></i>
+                      Create Event
                     </a>
                   </li>
                   <li><hr class="dropdown-divider" style="border-color: var(--color-border-subtle);"></li>
                 {% endif %}
+
                 <li role="menuitem">
-                  <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'dashboard:buyer' %}">
-                    <i class="bi bi-ticket-perforated" aria-hidden="true"></i> My Tickets
+                  <a class="dropdown-item d-flex align-items-center gap-2"
+                     href="{% url 'dashboard:buyer' %}">
+                    <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
+                    My Tickets
                   </a>
                 </li>
                 <li role="menuitem">
-                  <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'accounts:profile' %}">
-                    <i class="bi bi-person" aria-hidden="true"></i> Profile
+                  <a class="dropdown-item d-flex align-items-center gap-2"
+                     href="{% url 'accounts:profile' %}">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                    Profile
                   </a>
                 </li>
                 <li><hr class="dropdown-divider" style="border-color: var(--color-border-subtle);"></li>
                 <li role="menuitem">
                   <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger-subtle">
-                      <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Sign out
+                    <button type="submit"
+                            class="dropdown-item d-flex align-items-center gap-2"
+                            style="color: var(--color-danger-text);">
+                      <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                      Sign out
                     </button>
                   </form>
                 </li>
@@ -118,9 +153,9 @@
             </div>
 
           {% else %}
-            {# ── Anonymous: auth CTAs ── #}
-            <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">Sign in</a>
-            <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-sm">Get tickets</a>
+            {# ── Anonymous ── #}
+            <a href="{% url 'accounts:login' %}"  class="btn btn-secondary btn-sm">Sign in</a>
+            <a href="{% url 'accounts:signup' %}"  class="btn btn-primary btn-sm">Get tickets</a>
           {% endif %}
 
         </div>

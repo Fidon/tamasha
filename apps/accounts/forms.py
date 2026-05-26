@@ -19,6 +19,14 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model  = CustomUser
         fields = ('email', 'full_name', 'phone')
+        
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip()
+        if phone:
+            phone = phone.replace(' ', '')
+            if len(phone) != 13 or not phone.startswith('+') or not phone[1:].isdigit():
+                raise forms.ValidationError(_('Please enter a valid phone number (e.g., +255 713 000 000).'))
+        return phone
     
     def clean_full_name(self):
         full_name = self.cleaned_data.get('full_name', '').strip()
@@ -88,6 +96,14 @@ class ProfileUpdateForm(forms.ModelForm):
             'full_name': forms.TextInput(attrs={'autocomplete': 'name'}),
             'phone':     forms.TextInput(attrs={'autocomplete': 'tel'}),
         }
+        
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip()
+        if phone:
+            phone = phone.replace(' ', '')
+            if len(phone) != 13 or not phone.startswith('+') or not phone[1:].isdigit():
+                raise forms.ValidationError(_('Please enter a valid phone number (e.g., +255 713 000 000).'))
+        return phone
     
     def clean_full_name(self):
         full_name = self.cleaned_data.get('full_name', '').strip()
@@ -132,11 +148,19 @@ class OrganizerRequestForm(forms.ModelForm):
         help_texts = {
             'pitch': _('Tell us about the types of events you plan to host.'),
         }
+        
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip()
+        if phone:
+            phone = phone.replace(' ', '')
+            if len(phone) != 13 or not phone.startswith('+') or not phone[1:].isdigit():
+                raise forms.ValidationError(_('Please enter a valid phone number (e.g., +255 713 000 000).'))
+        return phone
 
     def clean_organization_name(self):
         name = self.cleaned_data.get('organization_name', '').strip()
-        if len(name) < 2:
-            raise forms.ValidationError(_('Organization name must be at least 2 characters.'))
+        if len(name) < 3:
+            raise forms.ValidationError(_('Organization name must be at least 3 characters.'))
         return name
 
     def clean_pitch(self):

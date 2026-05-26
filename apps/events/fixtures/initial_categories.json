@@ -1,0 +1,17 @@
+[
+  {"model": "events.category", "pk": 1,  "fields": {"name": "Music",       "slug": "music",       "icon": "bi-music-note-beamed", "sort_order": 1}},
+  {"model": "events.category", "pk": 2,  "fields": {"name": "Nightlife",   "slug": "nightlife",   "icon": "bi-moon-stars",        "sort_order": 2}},
+  {"model": "events.category", "pk": 3,  "fields": {"name": "Festival",    "slug": "festival",    "icon": "bi-stars",             "sort_order": 3}},
+  {"model": "events.category", "pk": 4,  "fields": {"name": "Conference",  "slug": "conference",  "icon": "bi-briefcase",         "sort_order": 4}},
+  {"model": "events.category", "pk": 5,  "fields": {"name": "Sports",      "slug": "sports",      "icon": "bi-trophy",            "sort_order": 5}},
+  {"model": "events.category", "pk": 6,  "fields": {"name": "Comedy",      "slug": "comedy",      "icon": "bi-emoji-laughing",    "sort_order": 6}},
+  {"model": "events.category", "pk": 7,  "fields": {"name": "Art",         "slug": "art",         "icon": "bi-palette",           "sort_order": 7}},
+  {"model": "events.category", "pk": 8,  "fields": {"name": "Food & Drink","slug": "food-drink",  "icon": "bi-cup-hot",           "sort_order": 8}},
+  {"model": "events.category", "pk": 9,  "fields": {"name": "Networking",  "slug": "networking",  "icon": "bi-people",            "sort_order": 9}},
+  {"model": "events.category", "pk": 10, "fields": {"name": "Theatre",     "slug": "theatre",     "icon": "bi-masks",             "sort_order": 10}},
+  {"model": "events.category", "pk": 11, "fields": {"name": "Tech",        "slug": "tech",        "icon": "bi-cpu",               "sort_order": 11}},
+  {"model": "events.category", "pk": 12, "fields": {"name": "Fashion",     "slug": "fashion",     "icon": "bi-bag",               "sort_order": 12}},
+  {"model": "events.category", "pk": 13, "fields": {"name": "Wellness",    "slug": "wellness",    "icon": "bi-heart-pulse",       "sort_order": 13}},
+  {"model": "events.category", "pk": 14, "fields": {"name": "Religion",    "slug": "religion",    "icon": "bi-sun",               "sort_order": 14}},
+  {"model": "events.category", "pk": 15, "fields": {"name": "Charity",     "slug": "charity",     "icon": "bi-hand-heart",        "sort_order": 15}}
+]

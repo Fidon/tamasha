@@ -1,0 +1,85 @@
+{% comment %}
+  Wizard step navigation sidebar.
+  Active/completed state is driven by JS via data-step-nav attributes.
+{% endcomment %}
+<ol class="wizard-steps-nav" role="list" aria-label="Event creation steps">
+
+  <li class="wizard-steps-nav__item is-active" data-step-nav="1" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="1"
+            aria-current="step">
+      <span class="wizard-steps-nav__num" aria-hidden="true">1</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Basic Info</span>
+    </button>
+  </li>
+
+  <li class="wizard-steps-nav__item" data-step-nav="2" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="2"
+            disabled>
+      <span class="wizard-steps-nav__num" aria-hidden="true">2</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Date &amp; Venue</span>
+    </button>
+  </li>
+
+  <li class="wizard-steps-nav__item" data-step-nav="3" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="3"
+            disabled>
+      <span class="wizard-steps-nav__num" aria-hidden="true">3</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Banner</span>
+    </button>
+  </li>
+
+  <li class="wizard-steps-nav__item" data-step-nav="4" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="4"
+            disabled>
+      <span class="wizard-steps-nav__num" aria-hidden="true">4</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Collaborators</span>
+    </button>
+  </li>
+
+  <li class="wizard-steps-nav__item" data-step-nav="5" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="5"
+            disabled>
+      <span class="wizard-steps-nav__num" aria-hidden="true">5</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Tickets</span>
+    </button>
+  </li>
+
+  <li class="wizard-steps-nav__item" data-step-nav="6" role="listitem">
+    <button type="button"
+            class="wizard-steps-nav__btn"
+            data-goto-step="6"
+            disabled>
+      <span class="wizard-steps-nav__num" aria-hidden="true">6</span>
+      <span class="wizard-steps-nav__check" aria-hidden="true">
+        <i class="bi bi-check-lg"></i>
+      </span>
+      <span class="wizard-steps-nav__label">Review &amp; Publish</span>
+    </button>
+  </li>
+
+</ol>

@@ -1,26 +1,33 @@
 from django.conf import settings
 
-
 class SEOMixin:
     """
     Inject SEO metadata into template context.
 
-    Usage in a CBV:
-        class EventDetailView(SEOMixin, DetailView):
-            seo_title       = "Event Name — Tamasha Events"
-            seo_description = "Event description..."
+    Class-level defaults for static pages:
+        class AboutView(SEOMixin, TemplateView):
+            seo_title       = "About — Tamasha Events"
+            seo_description = "Learn about Tamasha Events."
 
-    Or override get_seo_* methods for dynamic values:
+    Override get_seo_* methods for dynamic values (detail pages):
         def get_seo_title(self):
             return f"{self.object.title} — {settings.SITE_NAME}"
+
+        def get_seo_og_image(self):
+            # Return an absolute URL string or None to fall back to default.
+            if self.object.banner_display:
+                return self.request.build_absolute_uri(self.object.banner_display.url)
+            return None
     """
 
-    seo_title            = None
-    seo_description      = None
-    seo_image            = None   # absolute URL
-    seo_robots           = 'index, follow'
-    seo_og_type          = 'website'
-    seo_canonical        = None   # overrides request.path-based canonical
+    seo_title       = None
+    seo_description = None
+    seo_image       = None   # absolute URL — static fallback
+    seo_robots      = 'index, follow'
+    seo_og_type     = 'website'
+    seo_canonical   = None   # overrides request.path-based canonical
+
+    # ------------------------------------------------------------------ getters
 
     def get_seo_title(self):
         return self.seo_title or settings.SITE_NAME
@@ -28,11 +35,24 @@ class SEOMixin:
     def get_seo_description(self):
         return self.seo_description or settings.SITE_DESCRIPTION
 
+    def get_seo_og_image(self):
+        """
+        Override in subclasses to return a page-specific absolute image URL.
+        Falls back to the static OG default.
+        """
+        return None
+
     def get_seo_image(self):
+        """
+        Final resolved OG image URL. Checks get_seo_og_image() first,
+        then the class-level seo_image attr, then the site default.
+        """
+        override = self.get_seo_og_image()
+        if override:
+            return override
         if self.seo_image:
             return self.seo_image
-        request = self.request
-        return request.build_absolute_uri(
+        return self.request.build_absolute_uri(
             f"{settings.STATIC_URL}images/og-default.jpg"
         )
 
@@ -46,6 +66,8 @@ class SEOMixin:
 
     def get_seo_og_type(self):
         return self.seo_og_type
+
+    # ------------------------------------------------------------------ context
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -61,5 +83,5 @@ class SEOMixin:
 
 
 class NoIndexMixin(SEOMixin):
-    """Convenience mixin for private/dashboard pages that must not be indexed."""
+    """Convenience mixin for private/dashboard/auth pages that must not be indexed."""
     seo_robots = 'noindex, nofollow'

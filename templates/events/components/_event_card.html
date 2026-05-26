@@ -1,0 +1,133 @@
+{% load static %}
+{% comment %}
+  Reusable event card component.
+  Context: event — a single Event instance with prefetched ticket_types and tags.
+{% endcomment %}
+
+{% load humanize %}
+{% with min_price=event.ticket_types.all|first %}
+<article class="event-card card h-100{% if event.is_featured %} card--featured{% endif %}"
+         aria-label="{{ event.title }}">
+
+  {# ── Banner ── #}
+  <a href="{% url 'events:detail' slug=event.slug %}"
+     class="event-card__image-link"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="event-card__image-wrap">
+      {% if event.banner_display %}
+        <img src="{{ event.banner_display.url }}"
+             alt="{{ event.title }} event banner"
+             class="event-card__image"
+             loading="lazy"
+             width="700"
+             height="260">
+      {% elif event.banner %}
+        <img src="{{ event.banner.url }}"
+             alt="{{ event.title }} event banner"
+             class="event-card__image"
+             loading="lazy"
+             width="700"
+             height="260">
+      {% else %}
+        <div class="event-card__image-placeholder" aria-hidden="true">
+          <i class="bi bi-calendar-event" aria-hidden="true"></i>
+        </div>
+      {% endif %}
+
+      {# Status badge overlay #}
+      {% if event.is_cancelled %}
+        <span class="event-card__status-badge event-card__status-badge--cancelled">
+          Cancelled
+        </span>
+      {% elif event.is_sold_out %}
+        <span class="event-card__status-badge event-card__status-badge--soldout">
+          Sold Out
+        </span>
+      {% elif event.is_featured %}
+        <span class="event-card__status-badge event-card__status-badge--featured">
+          <i class="bi bi-star-fill me-1" aria-hidden="true"></i>Featured
+        </span>
+      {% endif %}
+
+      {# Category chip #}
+      <span class="event-card__category">
+        <i class="{{ event.category.icon }}" aria-hidden="true"></i>
+        {{ event.category.name }}
+      </span>
+    </div>
+  </a>
+
+  {# ── Body ── #}
+  <div class="event-card__body card-body d-flex flex-column gap-2 p-3">
+
+    {# Date + venue row #}
+    <div class="event-card__meta d-flex align-items-center gap-3">
+      <span class="event-card__date">
+        <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+        <time datetime="{{ event.starts_at|date:'Y-m-d' }}">
+          {{ event.starts_at|date:"D, d M Y" }}
+        </time>
+      </span>
+      <span class="event-card__venue text-truncate">
+        <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>
+        {{ event.venue.city }}
+      </span>
+    </div>
+
+    {# Title #}
+    <h3 class="event-card__title">
+      <a href="{% url 'events:detail' slug=event.slug %}"
+         class="event-card__title-link stretched-link">
+        {{ event.title }}
+      </a>
+    </h3>
+
+    {# Tags #}
+    {% with tags=event.tags.all %}
+      {% if tags %}
+        <div class="event-card__tags d-flex flex-wrap gap-1" aria-label="Event tags">
+          {% for tag in tags|slice:":3" %}
+            <span class="badge bg-primary">{{ tag.name }}</span>
+          {% endfor %}
+          {% if tags|length > 3 %}
+            <span class="badge bg-primary">+{{ tags|length|add:"-3" }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {# Spacer #}
+    <div class="mt-auto pt-2">
+      <div class="event-card__footer d-flex align-items-center justify-content-between">
+
+        {# Price #}
+        <div class="event-card__price">
+          {% if min_price %}
+            {% if min_price.is_free %}
+              <span class="event-card__price-value event-card__price-value--free">Free</span>
+            {% else %}
+              <span class="event-card__price-label">From</span>
+              <span class="event-card__price-value">
+                TZS {{ min_price.price|floatformat:0|intcomma }}
+              </span>
+            {% endif %}
+          {% else %}
+            <span class="event-card__price-value">TZS —</span>
+          {% endif %}
+        </div>
+
+        {# Time #}
+        <span class="event-card__time">
+          <i class="bi bi-clock me-1" aria-hidden="true"></i>
+          <time datetime="{{ event.starts_at|date:'H:i' }}">
+            {{ event.starts_at|date:"H:i" }}
+          </time>
+        </span>
+
+      </div>
+    </div>
+
+  </div>{# /card-body #}
+</article>
+{% endwith %}

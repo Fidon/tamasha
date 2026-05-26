@@ -160,6 +160,12 @@ AZAMPAY_APP_NAME = env('AZAMPAY_APP_NAME')
 AZAMPAY_CLIENT_ID = env('AZAMPAY_CLIENT_ID')
 AZAMPAY_CLIENT_SECRET = env('AZAMPAY_CLIENT_SECRET')
 AZAMPAY_BASE_URL = env('AZAMPAY_BASE_URL', default='https://sandbox.azampay.co.tz')
+AZAMPAY_TOKEN_URL = env(
+    'AZAMPAY_TOKEN_URL',
+    default='https://authenticator-sandbox.azampay.co.tz/AppRegistration/GenerateToken'
+)
+AZAMPAY_CALLBACK_URL = env('AZAMPAY_CALLBACK_URL', default='')
+AZAMPAY_TOKEN = env('AZAMPAY_TOKEN', default='')
 
 # ---------------------------------------------------------------------------
 # django-axes  (brute-force login protection)

@@ -5,18 +5,34 @@ All business logic for auth and organizer onboarding.
 Views stay thin — they call these functions only.
 """
 
-from django.contrib.auth import login
 from django.utils import timezone
 
 from .models import CustomUser, OrganizerProfile, OrganizerRequest
+
+
+# ── Axes helper ────────────────────────────────────────────────────────────
+
+def _clear_axes_records(email: str) -> None:
+    """
+    Delete any django-axes AccessAttempt records for the given email.
+    Called after registration and email verification so stale failure
+    records never block a legitimate first login.
+    Silent on any error — axes cleanup must never break the main flow.
+    """
+    try:
+        from axes.models import AccessAttempt
+        AccessAttempt.objects.filter(username=email).delete()
+    except Exception:
+        pass
 
 
 # ── Registration ───────────────────────────────────────────────────────────
 
 def register_user(email: str, full_name: str, password: str) -> CustomUser:
     """
-    Create a new inactive-verified user and return the instance.
-    Email verification token is set automatically via model default.
+    Create a new user and return the instance.
+    Clears any pre-existing axes records for this email (edge case: someone
+    tried to log in before registering, leaving a stale failure record).
     Does NOT send the verification email — caller queues the Celery task.
     """
     user = CustomUser.objects.create_user(
@@ -24,6 +40,7 @@ def register_user(email: str, full_name: str, password: str) -> CustomUser:
         full_name=full_name,
         password=password,
     )
+    _clear_axes_records(email)
     return user
 
 
@@ -31,6 +48,7 @@ def verify_email(token: str) -> CustomUser | None:
     """
     Look up user by verification token, mark email as verified.
     Returns the user on success, None if token is invalid/already used.
+    Clears axes records so the first post-verification login is never blocked.
     """
     try:
         user = CustomUser.objects.get(
@@ -44,6 +62,7 @@ def verify_email(token: str) -> CustomUser | None:
     user.email_verified_at = timezone.now()
     user.save(update_fields=['email_verified', 'email_verified_at'])
     user.rotate_verification_token()
+    _clear_axes_records(user.email)
     return user
 
 
@@ -79,19 +98,26 @@ def submit_organizer_request(
     """
     Create a new OrganizerRequest row and set user status to PENDING.
     Previous requests are preserved as audit trail — never deleted.
+    Queues an async admin notification email via Celery.
     """
-    request = OrganizerRequest.objects.create(
-        user=user,
-        organization_name=organization_name,
-        bio=bio,
-        phone=phone,
-        website=website,
-        pitch=pitch,
-        status=OrganizerRequest.Status.PENDING,
+    org_request = OrganizerRequest.objects.create(
+        user              = user,
+        organization_name = organization_name,
+        bio               = bio,
+        phone             = phone,
+        website           = website,
+        pitch             = pitch,
+        status            = OrganizerRequest.Status.PENDING,
     )
     user.organizer_status = CustomUser.OrganizerStatus.PENDING
     user.save(update_fields=['organizer_status'])
-    return request
+
+    # Notify admin asynchronously — import inside function to avoid
+    # circular imports at module load time
+    from .tasks import notify_admin_new_organizer_request
+    notify_admin_new_organizer_request.delay(org_request.pk)
+
+    return org_request
 
 
 def approve_organizer_request(
@@ -103,7 +129,7 @@ def approve_organizer_request(
     - Updates OrganizerRequest row
     - Sets CustomUser.is_organizer + status
     - Creates or updates OrganizerProfile
-    Does NOT send SMS — caller queues the Celery task.
+    Does NOT send notifications — caller queues the Celery task.
     """
     now = timezone.now()
 
@@ -139,7 +165,7 @@ def reject_organizer_request(
     Reject a pending request:
     - Updates OrganizerRequest row with mandatory reason
     - Sets CustomUser.organizer_status to REJECTED
-    Does NOT send SMS — caller queues the Celery task.
+    Does NOT send notifications — caller queues the Celery task.
     """
     if not rejection_reason.strip():
         raise ValueError('A rejection reason is required.')

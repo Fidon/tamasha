@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+  <link rel="stylesheet" href="{% static 'css/events/form.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="wizard-page">
+  <div class="container">
+
+    <!-- ── Page heading ── -->
+    <div class="wizard-page__header">
+      <div>
+        <p class="label-uppercase mb-1">
+          {% if editing_event %}Edit Event{% else %}New Event{% endif %}
+        </p>
+        <h1 class="wizard-page__title">
+          {% if editing_event %}{{ editing_event.title }}{% else %}Create Your Event{% endif %}
+        </h1>
+      </div>
+      {% if editing_event %}
+        <a href="{% url 'events:detail' slug=editing_event.slug %}"
+           class="btn btn-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Back to Event
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="wizard-layout">
+
+      <!-- ── Step nav sidebar ── -->
+      <aside class="wizard-nav" aria-label="Wizard steps">
+        {% include "events/components/_wizard_steps.html" %}
+      </aside>
+
+      <!-- ── Step panels ── -->
+      <div class="wizard-body">
+
+        <!-- ════════════════════════════════════════
+           STEP 1 — Basic Info
+        ════════════════════════════════════════ -->
+        <div class="wizard-step" id="step-1" data-step="1">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Basic Information</h2>
+            <p class="wizard-step__subtitle">Give your event a title, category, tags and description.</p>
+          </div>
+
+          <div class="wizard-step__body">
+            <!-- Title -->
+            <div class="wizard-field">
+              <label for="id_title" class="wizard-label">
+                Event Title <span class="wizard-required" aria-hidden="true">*</span>
+              </label>
+              <input type="text"
+                     id="id_title"
+                     name="title"
+                     class="form-control"
+                     placeholder="e.g. Dar Live Music Festival 2026"
+                     maxlength="255"
+                     autocomplete="off"
+                     aria-required="true">
+              <div class="wizard-field__error" id="error-title" role="alert" hidden></div>
+            </div>
+
+            <!-- Category -->
+            <div class="wizard-field">
+              <label for="id_category" class="wizard-label">
+                Category <span class="wizard-required" aria-hidden="true">*</span>
+              </label>
+              <select id="id_category" name="category" class="form-select" aria-required="true">
+                <option value="">Select a category</option>
+                {% for cat in categories %}
+                  <option value="{{ cat.pk }}">
+                    {{ cat.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="wizard-field__error" id="error-category" role="alert" hidden></div>
+            </div>
+
+            <!-- Tags -->
+            <div class="wizard-field">
+              <span class="wizard-label" id="tags-label">Tags</span>
+              <p class="wizard-field__hint">Select predefined tags or type a custom one and press Enter.</p>
+
+              <!-- Predefined tag chips -->
+              <div class="tag-chips" role="group" aria-labelledby="tags-label">
+                {% for tag in predefined_tags %}
+                  <button type="button"
+                          class="tag-chip"
+                          data-tag-id="{{ tag.pk }}"
+                          data-tag-name="{{ tag.name }}"
+                          aria-pressed="false">
+                    {{ tag.name }}
+                  </button>
+                {% endfor %}
+              </div>
+
+              <!-- Custom tag input -->
+              <div class="tag-custom-input mt-3">
+                <div class="tag-input-wrap">
+                  <div class="tag-selected" id="selected-tags" aria-live="polite" aria-label="Selected tags"></div>
+                  <input type="text"
+                         id="custom-tag-input"
+                         class="tag-text-input"
+                         placeholder="Add custom tag…"
+                         autocomplete="off"
+                         aria-label="Add custom tag, press Enter to add">
+                </div>
+              </div>
+
+              <!-- Hidden fields carrying tag data to the server -->
+              <input type="hidden" id="id_predefined_tags" name="predefined_tags">
+              <input type="hidden" id="id_custom_tags"     name="custom_tags">
+              <div class="wizard-field__error" id="error-tags" role="alert" hidden></div>
+            </div>
+
+            <!-- Description — Quill editor -->
+            <div class="wizard-field">
+              <label class="wizard-label" for="quill-editor">
+                Description
+              </label>
+              <div id="quill-editor" class="quill-editor-wrap" aria-label="Event description editor"></div>
+              <input type="hidden" id="id_description" name="description">
+              <div class="wizard-field__error" id="error-description" role="alert" hidden></div>
+            </div>
+          </div>
+
+          <div class="wizard-step__footer">
+            <div></div>
+            <button type="button" class="btn btn-primary wizard-next-btn" data-step="1">
+              Next: Date &amp; Venue
+              <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+           STEP 2 — Date, Time & Venue
+        ════════════════════════════════════════ -->
+        <div class="wizard-step d-none" id="step-2" data-step="2">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Date, Time &amp; Venue</h2>
+            <p class="wizard-step__subtitle">When and where is your event taking place?</p>
+          </div>
+
+          <div class="wizard-step__body">
+            <!-- Timezone -->
+            <div class="wizard-field">
+              <label for="id_timezone" class="wizard-label">
+                Timezone <span class="wizard-required" aria-hidden="true">*</span>
+              </label>
+              <select id="id_timezone" name="timezone" class="form-select" aria-required="true">
+                {% for tz in timezones %}
+                  <option value="{{ tz.value }}"
+                    {% if tz.value == 'Africa/Dar_es_Salaam' %}selected{% endif %}>
+                    {{ tz.label }}
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="wizard-field__error" id="error-timezone" role="alert" hidden></div>
+            </div>
+
+            <!-- Start / End datetime row -->
+            <div class="wizard-datetime-row">
+              <div class="wizard-field">
+                <label for="id_starts_at" class="wizard-label">
+                  Start Date &amp; Time <span class="wizard-required" aria-hidden="true">*</span>
+                </label>
+                <input type="datetime-local"
+                       id="id_starts_at"
+                       name="starts_at"
+                       class="form-control"
+                       aria-required="true">
+                <div class="wizard-field__error" id="error-starts_at" role="alert" hidden></div>
+              </div>
+              <div class="wizard-field">
+                <label for="id_ends_at" class="wizard-label">
+                  End Date &amp; Time <span class="wizard-required" aria-hidden="true">*</span>
+                </label>
+                <input type="datetime-local"
+                       id="id_ends_at"
+                       name="ends_at"
+                       class="form-control"
+                       aria-required="true">
+                <div class="wizard-field__error" id="error-ends_at" role="alert" hidden></div>
+              </div>
+            </div>
+
+            <!-- Venue search -->
+            <div class="wizard-field">
+              <label for="venue-search" class="wizard-label">
+                Venue <span class="wizard-required" aria-hidden="true">*</span>
+              </label>
+              <p class="wizard-field__hint">
+                Search your saved venues or type a venue name. If not found in our database,
+                we'll search OpenStreetMap automatically.
+              </p>
+              <div class="venue-search-wrap">
+                <i class="bi bi-search venue-search-wrap__icon" aria-hidden="true"></i>
+                <input type="text"
+                       id="venue-search"
+                       class="form-control venue-search-wrap__input"
+                       placeholder="Search venues…"
+                       autocomplete="off"
+                       aria-autocomplete="list"
+                       aria-controls="venue-suggestions"
+                       aria-expanded="false">
+                <div class="venue-suggestions" id="venue-suggestions" role="listbox" aria-label="Venue suggestions" hidden></div>
+              </div>
+
+              <!-- Selected venue display -->
+              <div class="venue-selected" id="venue-selected" hidden>
+                <div class="venue-selected__card">
+                  <div class="venue-selected__info">
+                    <i class="bi bi-geo-alt-fill text-gold me-2" aria-hidden="true"></i>
+                    <div>
+                      <span class="venue-selected__name" id="venue-selected-name"></span>
+                      <span class="venue-selected__address" id="venue-selected-address"></span>
+                    </div>
+                  </div>
+                  <button type="button"
+                          class="venue-selected__clear"
+                          id="venue-clear-btn"
+                          aria-label="Clear selected venue">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hidden fields -->
+              <input type="hidden" id="id_venue_id"      name="venue_id">
+              <input type="hidden" id="id_venue_name"    name="venue_name">
+              <input type="hidden" id="id_venue_city"    name="venue_city">
+              <input type="hidden" id="id_venue_address" name="venue_address">
+              <input type="hidden" id="id_venue_lat"     name="venue_lat">
+              <input type="hidden" id="id_venue_lng"     name="venue_lng">
+              <input type="hidden" id="id_venue_osm_id"  name="venue_osm_id">
+              <div class="wizard-field__error" id="error-venue" role="alert" hidden></div>
+            </div>
+          </div>
+
+          <div class="wizard-step__footer">
+            <button type="button" class="btn btn-secondary wizard-back-btn" data-step="2">
+              <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back
+            </button>
+            <button type="button" class="btn btn-primary wizard-next-btn" data-step="2">
+              Next: Banner
+              <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+           STEP 3 — Banner
+        ════════════════════════════════════════ -->
+        <div class="wizard-step d-none" id="step-3" data-step="3">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Event Banner</h2>
+            <p class="wizard-step__subtitle">Upload a high-quality banner image for your event.</p>
+          </div>
+
+          <div class="wizard-step__body">
+            <div class="wizard-field">
+              <span class="wizard-label">Banner Image</span>
+              <p class="wizard-field__hint">
+                JPG, PNG or WebP · Max 10 MB · Recommended 1400 × 520 px.
+                An optimised display version is generated automatically.
+              </p>
+
+              <!-- Drop zone -->
+              <div class="banner-dropzone" id="banner-dropzone"
+                   role="button"
+                   tabindex="0"
+                   aria-label="Upload banner image. Click or drag and drop."
+                   aria-describedby="banner-hint">
+                <div class="banner-dropzone__idle" id="banner-idle">
+                  <i class="bi bi-cloud-arrow-up banner-dropzone__icon" aria-hidden="true"></i>
+                  <p class="banner-dropzone__text">
+                    Drag &amp; drop your banner here<br>
+                    <span class="banner-dropzone__sub">or click to browse</span>
+                  </p>
+                  <p class="banner-dropzone__hint" id="banner-hint">
+                    JPG, PNG, WebP · Max 10 MB
+                  </p>
+                </div>
+                <div class="banner-dropzone__preview" id="banner-preview" hidden>
+                  <img id="banner-preview-img" src="" alt="Banner preview" class="banner-dropzone__preview-img">
+                  <button type="button"
+                          class="banner-dropzone__remove"
+                          id="banner-remove-btn"
+                          aria-label="Remove banner">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <input type="file"
+                       id="banner-upload"
+                       name="banner"
+                       accept="image/jpeg,image/png,image/webp"
+                       class="banner-dropzone__input"
+                       aria-hidden="true"
+                       tabindex="-1">
+              </div>
+              <div class="wizard-field__error" id="error-banner" role="alert" hidden></div>
+            </div>
+          </div>
+
+          <div class="wizard-step__footer">
+            <button type="button" class="btn btn-secondary wizard-back-btn" data-step="3">
+              <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back
+            </button>
+            <button type="button" class="btn btn-primary wizard-next-btn" data-step="3">
+              Next: Collaborators
+              <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+           STEP 4 — Collaborators
+        ════════════════════════════════════════ -->
+        <div class="wizard-step d-none" id="step-4" data-step="4">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Collaborators</h2>
+            <p class="wizard-step__subtitle">
+              Add other approved organizers to co-host this event. This step is optional.
+            </p>
+          </div>
+
+          <div class="wizard-step__body">
+            <div class="wizard-field">
+              <label for="collab-search" class="wizard-label">Search Organizers</label>
+              <p class="wizard-field__hint">
+                Collaborators have read-only access to analytics, orders, and check-in data.
+              </p>
+
+              <div class="collab-search-wrap">
+                <i class="bi bi-search collab-search-wrap__icon" aria-hidden="true"></i>
+                <input type="text"
+                       id="collab-search"
+                       class="form-control collab-search-wrap__input"
+                       placeholder="Search by organization name…"
+                       autocomplete="off"
+                       aria-autocomplete="list"
+                       aria-controls="collab-suggestions">
+                <div class="collab-suggestions" id="collab-suggestions" role="listbox" hidden></div>
+              </div>
+
+              <!-- Selected collaborators list -->
+              <div class="collab-selected-list mt-4" id="collab-selected-list" aria-live="polite" aria-label="Selected collaborators">
+                <p class="collab-empty-msg" id="collab-empty-msg">
+                  <i class="bi bi-people me-2 opacity-50" aria-hidden="true"></i>
+                  No collaborators added yet.
+                </p>
+              </div>
+
+              <input type="hidden" id="id_collaborator_ids" name="collaborator_ids">
+              <div class="wizard-field__error" id="error-collaborators" role="alert" hidden></div>
+            </div>
+          </div>
+
+          <div class="wizard-step__footer">
+            <button type="button" class="btn btn-secondary wizard-back-btn" data-step="4">
+              <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back
+            </button>
+            <button type="button" class="btn btn-primary wizard-next-btn" data-step="4">
+              Next: Tickets
+              <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+           STEP 5 — Ticket Types
+        ════════════════════════════════════════ -->
+        <div class="wizard-step d-none" id="step-5" data-step="5">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Ticket Types</h2>
+            <p class="wizard-step__subtitle">
+              Define pricing tiers for your event. Add at least one ticket type.
+            </p>
+          </div>
+
+          <div class="wizard-step__body">
+            <div class="ticket-types-list" id="ticket-types-list" aria-label="Ticket types" aria-live="polite"></div>
+
+            <button type="button" class="btn btn-outline-primary btn-sm mt-3" id="add-ticket-btn">
+              <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Add Ticket Type
+            </button>
+            <div class="wizard-field__error" id="error-tickets" role="alert" hidden></div>
+          </div>
+
+          <div class="wizard-step__footer">
+            <button type="button" class="btn btn-secondary wizard-back-btn" data-step="5">
+              <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back
+            </button>
+            <button type="button" class="btn btn-primary wizard-next-btn" data-step="5">
+              Next: Review
+              <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+           STEP 6 — Review & Publish
+        ════════════════════════════════════════ -->
+        <div class="wizard-step d-none" id="step-6" data-step="6">
+          <div class="wizard-step__header">
+            <h2 class="wizard-step__title">Review &amp; Publish</h2>
+            <p class="wizard-step__subtitle">
+              Review your event details before publishing.
+            </p>
+          </div>
+
+          <div class="wizard-step__body">
+            <div class="review-grid" id="review-grid">
+              <!-- Populated dynamically by JS from draft data -->
+            </div>
+          </div>
+
+          <div class="wizard-step__footer wizard-step__footer--publish">
+            <button type="button" class="btn btn-secondary wizard-back-btn" data-step="6">
+              <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back
+            </button>
+            <div class="d-flex gap-3 flex-wrap">
+              <button type="button"
+                      class="btn btn-secondary"
+                      id="save-draft-btn"
+                      aria-label="Save as draft">
+                <i class="bi bi-floppy me-2" aria-hidden="true"></i>Save as Draft
+              </button>
+              <button type="button"
+                      class="btn btn-primary"
+                      id="publish-btn"
+                      aria-label="Publish event">
+                <i class="bi bi-send me-2" aria-hidden="true"></i>Publish Event
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /wizard-body -->
+    </div><!-- /wizard-layout -->
+
+    <!-- Discard draft link -->
+    <div class="wizard-discard">
+      <button type="button"
+              class="wizard-discard__btn"
+              id="discard-draft-btn"
+              data-url="{% url 'events:discard_draft' %}"
+              data-bs-toggle="modal"
+              data-bs-target="#wizardConfirmModal">
+        <i class="bi bi-trash3 me-1" aria-hidden="true"></i>
+        Discard &amp; start over
+      </button>
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+<!-- ── Wizard Confirmation Modal ── -->
+<div class="modal fade" id="wizardConfirmModal" tabindex="-1"
+     aria-labelledby="wizardConfirmLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="wizardConfirmLabel">Discard Draft</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"
+                style="filter: invert(1); opacity: 0.6;"></button>
+      </div>
+      <div class="modal-body">
+        This will permanently delete your draft and all unsaved progress. Are you sure?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm"
+                data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-sm"
+                id="wizardDiscardConfirmBtn">Discard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Ticket type row template (cloned by JS) ── -->
+<template id="ticket-type-template">
+  <div class="ticket-type-row" data-ticket-index="">
+    <div class="ticket-type-row__header">
+      <span class="ticket-type-row__label">Ticket Type</span>
+      <div class="d-flex align-items-center gap-2">
+        <label class="ticket-soldout-toggle" title="Mark as sold out">
+          <input type="checkbox" class="ticket-soldout-cb" aria-label="Mark as sold out">
+          <span class="ticket-soldout-label">Sold Out</span>
+        </label>
+        <button type="button" class="ticket-type-row__remove" aria-label="Remove ticket type">
+          <i class="bi bi-trash3" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="ticket-type-row__body">
+      <div class="ticket-field-grid">
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">
+            Name <span class="wizard-required" aria-hidden="true">*</span>
+          </label>
+          <input type="text"
+                 name="tt_name"
+                 class="form-control form-control-sm"
+                 placeholder="e.g. VIP, General Admission"
+                 maxlength="100">
+          <div class="wizard-field__error ticket-error-name" role="alert" hidden></div>
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">
+            Price (TZS) <span class="wizard-required" aria-hidden="true">*</span>
+          </label>
+          <input type="number"
+                 name="tt_price"
+                 class="form-control form-control-sm"
+                 placeholder="0 for free"
+                 min="0"
+                 step="0.01">
+          <div class="wizard-field__error ticket-error-price" role="alert" hidden></div>
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">
+            Quantity <span class="wizard-required" aria-hidden="true">*</span>
+          </label>
+          <input type="number"
+                 name="tt_quantity"
+                 class="form-control form-control-sm"
+                 placeholder="e.g. 200"
+                 min="1">
+          <div class="wizard-field__error ticket-error-quantity" role="alert" hidden></div>
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">Max Per Order</label>
+          <input type="number"
+                 name="tt_max_per_order"
+                 class="form-control form-control-sm"
+                 value="10"
+                 min="1">
+        </div>
+        <div class="wizard-field wizard-field--full">
+          <label class="wizard-label wizard-label--sm">Description (optional)</label>
+          <input type="text"
+                 name="tt_description"
+                 class="form-control form-control-sm"
+                 placeholder="Short perks summary, e.g. Front row + backstage access"
+                 maxlength="255">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">Sale Starts At</label>
+          <input type="datetime-local"
+                 name="tt_sale_starts_at"
+                 class="form-control form-control-sm">
+        </div>
+        <div class="wizard-field">
+          <label class="wizard-label wizard-label--sm">Sale Ends At</label>
+          <input type="datetime-local"
+                 name="tt_sale_ends_at"
+                 class="form-control form-control-sm">
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script>
+    window.TAMASHA = window.TAMASHA || {};
+    window.TAMASHA.wizard = {
+      stepUrl:            "{% url 'events:wizard_step' step=1 %}".replace('/1/', '/{step}/'),
+      venueSearchUrl:     "{% url 'events:venue_search' %}",
+      venueSaveUrl:       "{% url 'events:venue_save' %}",
+      collabSearchUrl:    "{% url 'events:collaborator_search' %}",
+      discardUrl:         "{% url 'events:discard_draft' %}",
+      csrfToken:          "{{ csrf_token }}",
+      stepReached:        {{ step_reached|default:1 }},
+      draftData:          {{ draft_data|default:"{}"|safe }},
+      isEditing:          {% if editing_event %}true{% else %}false{% endif %},
+    };
+  </script>
+  <script src="{% static 'js/events/form.js' %}" defer></script>
+{% endblock %}

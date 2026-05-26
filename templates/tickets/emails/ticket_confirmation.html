@@ -1,0 +1,74 @@
+{% extends "accounts/emails/base_email.html" %}
+
+{% block email_body %}
+<h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#F0EBE0;letter-spacing:-0.01em;">
+  Your Tickets Are Ready!
+</h2>
+<p style="margin:0 0 24px;font-size:15px;color:#CCCCCC;line-height:1.6;">
+  Hi {{ order.buyer_name }}, your tickets for
+  <strong style="color:#F0EBE0;">{{ event.title }}</strong> are confirmed.
+  Show the QR code(s) at the venue entrance.
+</p>
+
+<!-- Event summary -->
+<table style="width:100%;border-collapse:collapse;background:#1A1A1A;border-radius:8px;margin:0 0 24px;overflow:hidden;">
+  <tr>
+    <td style="padding:14px 16px;font-size:13px;color:#888888;font-weight:600;width:36%;border-bottom:1px solid #2A2A2A;">Event</td>
+    <td style="padding:14px 16px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ event.title }}</td>
+  </tr>
+  <tr>
+    <td style="padding:14px 16px;font-size:13px;color:#888888;font-weight:600;border-bottom:1px solid #2A2A2A;">Date</td>
+    <td style="padding:14px 16px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ event.starts_at|date:"l, d F Y · H:i" }}</td>
+  </tr>
+  <tr>
+    <td style="padding:14px 16px;font-size:13px;color:#888888;font-weight:600;border-bottom:1px solid #2A2A2A;">Venue</td>
+    <td style="padding:14px 16px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ event.venue.name }}, {{ event.venue.city }}</td>
+  </tr>
+  <tr>
+    <td style="padding:14px 16px;font-size:13px;color:#888888;font-weight:600;border-bottom:1px solid #2A2A2A;">Order Ref</td>
+    <td style="padding:14px 16px;font-size:13px;color:#C9A84C;font-weight:700;letter-spacing:0.05em;font-family:monospace;border-bottom:1px solid #2A2A2A;">{{ order.reference_short }}</td>
+  </tr>
+  <tr>
+    <td style="padding:14px 16px;font-size:13px;color:#888888;font-weight:600;">Total Paid</td>
+    <td style="padding:14px 16px;font-size:13px;color:#F0EBE0;font-weight:700;">
+      {% if order.gross_amount == 0 %}Free{% else %}TZS {{ order.gross_amount|floatformat:0 }}{% endif %}
+    </td>
+  </tr>
+</table>
+
+<!-- Ticket breakdown -->
+<p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#888888;text-transform:uppercase;letter-spacing:0.06em;">
+  Ticket Breakdown
+</p>
+{% for item in order.items.all %}
+<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:8px;padding:14px 16px;margin:0 0 8px;display:flex;justify-content:space-between;">
+  <span style="font-size:14px;color:#F0EBE0;font-weight:600;">
+    {{ item.ticket_type.name }} &times; {{ item.quantity }}
+  </span>
+  <span style="font-size:14px;color:#C9A84C;font-weight:700;">
+    {% if item.unit_price == 0 %}Free{% else %}TZS {{ item.subtotal|floatformat:0 }}{% endif %}
+  </span>
+</div>
+{% endfor %}
+
+<!-- QR note -->
+<div style="background:#1C2E1A;border:1px solid #2E4A2C;border-radius:8px;padding:14px 16px;margin:24px 0;">
+  <p style="margin:0;font-size:13px;color:#5DBB63;line-height:1.6;">
+    <strong>QR Codes attached:</strong> Your ticket QR code(s) are attached to this email as images.
+    Save them to your phone or print them out — you'll need to show them at the entrance.
+  </p>
+</div>
+
+<!-- CTA -->
+<div style="text-align:center;margin:24px 0 8px;">
+  <a href="{{ ticket_url }}"
+     style="display:inline-block;background-color:#C9A84C;color:#0D0D0D;text-decoration:none;
+            font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;letter-spacing:0.01em;">
+    View Tickets Online
+  </a>
+</div>
+<p style="margin:12px 0 0;font-size:12px;color:#555555;text-align:center;">
+  Tickets also available at:
+  <a href="{{ ticket_url }}" style="color:#C9A84C;">{{ ticket_url }}</a>
+</p>
+{% endblock %}

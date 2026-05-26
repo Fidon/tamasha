@@ -1,0 +1,60 @@
+{% extends "accounts/emails/base_email.html" %}
+
+{% block email_body  %}
+<h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#F0EBE0;letter-spacing:-0.01em;">
+  New Organizer Application
+</h2>
+
+<p style="margin:0 0 16px;font-size:15px;color:#CCCCCC;line-height:1.6;">
+  A new organizer application has been submitted on <strong style="color:#F0EBE0;">{{ site_name }}</strong>
+  and is awaiting your review.
+</p>
+
+<!-- Application details -->
+<table style="width:100%;border-collapse:collapse;margin:0 0 24px;">
+  <tr>
+    <td style="padding:10px 12px;font-size:13px;color:#888888;font-weight:500;width:40%;border-bottom:1px solid #2A2A2A;">Applicant</td>
+    <td style="padding:10px 12px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ user.get_full_name }} ({{ user.email }})</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;font-size:13px;color:#888888;font-weight:500;border-bottom:1px solid #2A2A2A;">Organization</td>
+    <td style="padding:10px 12px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ org_request.organization_name }}</td>
+  </tr>
+  {% if org_request.website %}
+  <tr>
+    <td style="padding:10px 12px;font-size:13px;color:#888888;font-weight:500;border-bottom:1px solid #2A2A2A;">Website</td>
+    <td style="padding:10px 12px;font-size:13px;color:#C9A84C;border-bottom:1px solid #2A2A2A;">{{ org_request.website }}</td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td style="padding:10px 12px;font-size:13px;color:#888888;font-weight:500;border-bottom:1px solid #2A2A2A;">Phone</td>
+    <td style="padding:10px 12px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ org_request.phone|default:"Not provided" }}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;font-size:13px;color:#888888;font-weight:500;border-bottom:1px solid #2A2A2A;">Submitted</td>
+    <td style="padding:10px 12px;font-size:13px;color:#F0EBE0;border-bottom:1px solid #2A2A2A;">{{ org_request.submitted_at|date:"d M Y, H:i" }}</td>
+  </tr>
+</table>
+
+{% if org_request.pitch %}
+<p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#888888;text-transform:uppercase;letter-spacing:0.06em;">
+  Pitch / Reason
+</p>
+<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:8px;padding:16px;margin:0 0 24px;">
+  <p style="margin:0;font-size:14px;color:#CCCCCC;line-height:1.7;">{{ org_request.pitch }}</p>
+</div>
+{% endif %}
+
+<!-- CTA -->
+<div style="text-align:center;margin:0 0 8px;">
+  <a href="{{ review_url }}"
+     style="display:inline-block;background-color:#C9A84C;color:#0D0D0D;text-decoration:none;
+            font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;letter-spacing:0.01em;">
+    Review Application
+  </a>
+</div>
+
+<p style="margin:16px 0 0;font-size:13px;color:#555555;text-align:center;">
+  Or copy this link: <a href="{{ review_url }}" style="color:#C9A84C;">{{ review_url }}</a>
+</p>
+{% endblock %}

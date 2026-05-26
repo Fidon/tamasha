@@ -1,0 +1,456 @@
+/* ============================================================
+   TAMASHA EVENTS — Checkout Page
+   static/css/tickets/checkout.css
+   ============================================================ */
+
+.checkout-page {
+  padding: var(--space-10) 0 var(--space-16);
+  min-height: 80vh;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+/* ── Event strip ─────────────────────────────────────────── */
+.checkout-event-strip {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  background-color: var(--color-bg-card);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+.checkout-event-strip__img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.checkout-event-strip__info {
+  padding: var(--space-4) var(--space-4) var(--space-4) 0;
+  min-width: 0;
+}
+.checkout-event-strip__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+.checkout-event-strip__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Sections ────────────────────────────────────────────── */
+.checkout-section {
+  background-color: var(--color-bg-card);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+}
+.checkout-section__title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  letter-spacing: -0.01em;
+}
+.checkout-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--tamasha-gold);
+  color: #0d0d0d;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Ticket selector ─────────────────────────────────────── */
+.ticket-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.ticket-selector__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--color-bg-card-raised);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
+}
+.ticket-selector__row:hover:not(.is-soldout) {
+  border-color: var(--tamasha-gold-border);
+}
+.ticket-selector__row.is-soldout {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.ticket-selector__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.ticket-selector__name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+.ticket-selector__desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.ticket-selector__soldout-badge {
+  font-size: var(--text-xs);
+  color: var(--color-danger-text);
+  font-weight: var(--weight-medium);
+}
+.ticket-selector__urgency {
+  font-size: var(--text-xs);
+  color: var(--color-warning-text);
+  font-weight: var(--weight-medium);
+}
+.ticket-selector__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+.ticket-selector__price {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--ticket-price);
+  white-space: nowrap;
+}
+.ticket-selector__price--free {
+  color: var(--color-success-text);
+}
+
+/* Qty control */
+.ticket-qty-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ticket-qty-control__btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--color-border-strong);
+  background: none;
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+.ticket-qty-control__btn:hover {
+  background-color: var(--tamasha-gold-subtle);
+  border-color: var(--tamasha-gold-border);
+  color: var(--color-text-gold);
+}
+.ticket-qty-control__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.ticket-qty-control__val {
+  min-width: 24px;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* ── Buyer form ──────────────────────────────────────────── */
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.checkout-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.checkout-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+.checkout-required {
+  color: var(--color-danger-text);
+  margin-left: 2px;
+}
+.checkout-field__hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+.checkout-field__error {
+  font-size: var(--text-xs);
+  color: var(--color-danger-text);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-danger-bg);
+  border: 0.5px solid var(--color-danger-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Payment methods ─────────────────────────────────────── */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+  user-select: none;
+}
+.payment-method-option:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-bg-overlay);
+}
+.payment-method-option.is-selected {
+  border-color: var(--tamasha-gold-border);
+  background-color: var(--tamasha-gold-subtle);
+}
+.payment-method-option__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-overlay);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+.payment-method-option.is-selected .payment-method-option__icon {
+  background-color: var(--tamasha-gold-subtle);
+  color: var(--color-text-gold);
+}
+.payment-method-option__label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+.payment-method-option__sub {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.payment-method-option__check {
+  margin-left: auto;
+  color: var(--tamasha-gold);
+  font-size: var(--text-lg);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+.payment-method-option.is-selected .payment-method-option__check {
+  opacity: 1;
+}
+
+/* ── Summary card ────────────────────────────────────────── */
+.checkout-summary {
+  position: sticky;
+  top: 88px;
+}
+.checkout-summary__card {
+  background-color: var(--color-bg-card);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+.checkout-summary__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 0.5px solid var(--color-border-subtle);
+}
+.checkout-summary__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 48px;
+  margin-bottom: var(--space-4);
+}
+.checkout-summary__empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+.checkout-summary__item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.checkout-summary__item-name {
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+.checkout-summary__divider {
+  height: 0.5px;
+  background-color: var(--color-border-subtle);
+  margin: var(--space-4) 0;
+}
+.checkout-summary__totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+.checkout-summary__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.checkout-summary__row--total {
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+}
+
+.checkout-submit-btn {
+  height: 52px;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-xl) !important;
+}
+.checkout-summary__secure {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: var(--space-3) 0 0;
+}
+
+/* ── USSD pending modal ──────────────────────────────────── */
+.ussd-pending-icon {
+  font-size: 3.5rem;
+  color: var(--tamasha-gold);
+}
+.ussd-pending-title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+.ussd-pending-msg {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}
+.ussd-pending-waiting {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 991.98px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+    padding-bottom: 120px; /* space for sticky bottom bar */
+  }
+  /* Summary card hidden on mobile — replaced by sticky bottom bar */
+  .checkout-summary {
+    display: none;
+  }
+}
+
+/* ── Mobile sticky bottom bar ────────────────────────────── */
+.checkout-sticky-bar {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .checkout-sticky-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    background-color: var(--color-bg-card);
+    border-top: 0.5px solid var(--color-border-default);
+    padding: var(--space-3) var(--space-5);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  }
+  .checkout-sticky-bar__total {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .checkout-sticky-bar__label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .checkout-sticky-bar__amount {
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+  .checkout-sticky-bar .checkout-submit-btn {
+    flex: 1;
+    height: 44px;
+    font-size: var(--text-sm);
+  }
+}
+@media (max-width: 575.98px) {
+  .checkout-event-strip__img {
+    display: none;
+  }
+  .checkout-event-strip__info {
+    padding: var(--space-4);
+  }
+}

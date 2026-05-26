@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/tickets/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="checkout-page">
+  <div class="container">
+    <div class="checkout-layout">
+
+      {# ── Left: Ticket Selection + Buyer Form ── #}
+      <div class="checkout-main">
+
+        {# Event summary strip #}
+        <div class="checkout-event-strip">
+          {% if event.banner_display %}
+            <img src="{{ event.banner_display.url }}"
+                 alt="{{ event.title }}"
+                 class="checkout-event-strip__img">
+          {% endif %}
+          <div class="checkout-event-strip__info">
+            <p class="label-uppercase mb-1">You're buying tickets for</p>
+            <h1 class="checkout-event-strip__title">{{ event.title }}</h1>
+            <div class="checkout-event-strip__meta">
+              <span>
+                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                {{ event.starts_at|date:"D, d M Y · H:i" }}
+              </span>
+              <span>
+                <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>
+                {{ event.venue.name }}, {{ event.venue.city }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {# Step 1: Select Tickets #}
+        <div class="checkout-section">
+          <h2 class="checkout-section__title">
+            <span class="checkout-step-num">1</span>
+            Select Tickets
+          </h2>
+
+          <div class="ticket-selector" id="ticket-selector" role="list">
+            {% for tt in ticket_types %}
+              <div class="ticket-selector__row {% if tt.is_effectively_sold_out %}is-soldout{% endif %}"
+                   data-ticket-id="{{ tt.pk }}"
+                   data-max="{{ tt.quantity_remaining }}"
+                   data-max-per-order="{{ tt.max_per_order }}"
+                   data-price="{{ tt.price }}"
+                   data-name="{{ tt.name }}"
+                   role="listitem">
+                <div class="ticket-selector__info">
+                  <span class="ticket-selector__name">{{ tt.name }}</span>
+                  {% if tt.description %}
+                    <span class="ticket-selector__desc">{{ tt.description }}</span>
+                  {% endif %}
+                  {% if tt.is_effectively_sold_out %}
+                    <span class="ticket-selector__soldout-badge">Sold Out</span>
+                  {% elif tt.quantity_remaining <= 10 %}
+                    <span class="ticket-selector__urgency">
+                      Only {{ tt.quantity_remaining }} left!
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="ticket-selector__right">
+                  <span class="ticket-selector__price">
+                    {% if tt.is_free %}
+                      <span class="ticket-selector__price--free">Free</span>
+                    {% else %}
+                      TZS {{ tt.price|floatformat:0 }}
+                    {% endif %}
+                  </span>
+                  {% if not tt.is_effectively_sold_out %}
+                    <div class="ticket-qty-control" aria-label="Quantity for {{ tt.name }}">
+                      <button type="button"
+                              class="ticket-qty-control__btn ticket-qty-control__dec"
+                              aria-label="Decrease quantity">
+                        <i class="bi bi-dash" aria-hidden="true"></i>
+                      </button>
+                      <span class="ticket-qty-control__val" aria-live="polite">0</span>
+                      <button type="button"
+                              class="ticket-qty-control__btn ticket-qty-control__inc"
+                              aria-label="Increase quantity">
+                        <i class="bi bi-plus" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# Step 2: Your Details #}
+        <div class="checkout-section" id="buyer-section">
+          <h2 class="checkout-section__title">
+            <span class="checkout-step-num">2</span>
+            Your Details
+          </h2>
+
+          <div class="checkout-form">
+            <div class="checkout-field">
+              <label for="id_full_name" class="checkout-label">
+                Full Name <span class="checkout-required">*</span>
+              </label>
+              <input type="text"
+                     id="id_full_name"
+                     name="full_name"
+                     class="form-control"
+                     value="{{ form.full_name.value|default:'' }}"
+                     placeholder="e.g. John Mwangi"
+                     autocomplete="name"
+                     required>
+              <div class="checkout-field__error" id="error-full_name" hidden></div>
+            </div>
+
+            <div class="checkout-field">
+              <label for="id_email" class="checkout-label">
+                Email Address <span class="checkout-required">*</span>
+              </label>
+              <input type="email"
+                     id="id_email"
+                     name="email"
+                     class="form-control"
+                     value="{{ form.email.value|default:'' }}"
+                     placeholder="you@example.com"
+                     autocomplete="email"
+                     required>
+              <div class="checkout-field__error" id="error-email" hidden></div>
+            </div>
+
+            <div class="checkout-field">
+              <label for="id_phone" class="checkout-label">
+                Phone Number <span class="checkout-required">*</span>
+              </label>
+              <input type="tel"
+                     id="id_phone"
+                     name="phone"
+                     class="form-control"
+                     value="{{ form.phone.value|default:'' }}"
+                     placeholder="e.g. 0784561427"
+                     autocomplete="tel"
+                     inputmode="numeric"
+                     maxlength="10"
+                     required>
+              <p class="checkout-field__hint">
+                10-digit number starting with 0, e.g. 0784561427. Used for mobile money payment and ticket delivery via SMS.
+              </p>
+              <div class="checkout-field__error" id="error-phone" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        {# Step 3: Payment Method #}
+        <div class="checkout-section" id="payment-section">
+          <h2 class="checkout-section__title">
+            <span class="checkout-step-num">3</span>
+            Payment Method
+          </h2>
+
+          <div class="payment-methods" role="radiogroup" aria-label="Payment method">
+            <label class="payment-method-option is-selected" data-method="MOBILE_MONEY">
+              <input type="radio"
+                     name="payment_method"
+                     value="MOBILE_MONEY"
+                     checked
+                     class="visually-hidden">
+              <div class="payment-method-option__icon">
+                <i class="bi bi-phone" aria-hidden="true"></i>
+              </div>
+              <div>
+                <span class="payment-method-option__label">Mobile Money</span>
+                <span class="payment-method-option__sub">Airtel · Tigo · Halopesa · M-Pesa</span>
+              </div>
+              <i class="bi bi-check-circle-fill payment-method-option__check" aria-hidden="true"></i>
+            </label>
+
+            <label class="payment-method-option" data-method="CARD">
+              <input type="radio"
+                     name="payment_method"
+                     value="CARD"
+                     class="visually-hidden">
+              <div class="payment-method-option__icon">
+                <i class="bi bi-credit-card" aria-hidden="true"></i>
+              </div>
+              <div>
+                <span class="payment-method-option__label">Bank Card</span>
+                <span class="payment-method-option__sub">CRDB · NMB · NBC and more</span>
+              </div>
+              <i class="bi bi-check-circle-fill payment-method-option__check" aria-hidden="true"></i>
+            </label>
+          </div>
+
+          {# Mobile network selector — shown for MOBILE_MONEY only #}
+          <div class="mobile-network-wrap" id="mobile-network-wrap">
+            <label for="id_mobile_network" class="checkout-label mt-4">
+              Mobile Network <span class="checkout-required">*</span>
+            </label>
+            <select id="id_mobile_network" name="mobile_network" class="form-select">
+              <option value="">Select network</option>
+              <option value="Airtel">Airtel Money</option>
+              <option value="Tigo">Tigo Pesa</option>
+              <option value="Halopesa">Halopesa</option>
+              <option value="Mpesa">M-Pesa</option>
+            </select>
+            <div class="checkout-field__error" id="error-mobile_network" hidden></div>
+          </div>
+        </div>
+
+      </div>{# /checkout-main #}
+
+      {# ── Right: Order Summary ── #}
+      <aside class="checkout-summary" aria-label="Order summary">
+        <div class="checkout-summary__card">
+          <h2 class="checkout-summary__title">Order Summary</h2>
+
+          <div class="checkout-summary__items" id="summary-items">
+            <p class="checkout-summary__empty" id="summary-empty">
+              No tickets selected yet.
+            </p>
+          </div>
+
+          <div class="checkout-summary__divider"></div>
+
+          <div class="checkout-summary__totals">
+            <div class="checkout-summary__row">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">TZS 0</span>
+            </div>
+            <div class="checkout-summary__row checkout-summary__row--total">
+              <span>Total</span>
+              <span id="summary-total">TZS 0</span>
+            </div>
+          </div>
+
+          <button type="button"
+                  class="btn btn-primary w-100 checkout-submit-btn"
+                  id="checkout-submit-btn"
+                  disabled
+                  aria-label="Proceed to payment">
+            <i class="bi bi-lock me-2" aria-hidden="true"></i>
+            <span id="submit-btn-text">Select tickets to continue</span>
+          </button>
+
+          <p class="checkout-summary__secure">
+            <i class="bi bi-shield-check me-1" aria-hidden="true"></i>
+            Secured by AzamPay · 256-bit SSL
+          </p>
+        </div>
+      </aside>
+
+    </div>{# /checkout-layout #}
+      </div>{# /container #}
+</section>
+
+<!-- Mobile sticky bottom bar -->
+<div class="checkout-sticky-bar" id="checkout-sticky-bar" aria-label="Order total and checkout">
+  <div class="checkout-sticky-bar__total">
+    <span class="checkout-sticky-bar__label">Total</span>
+    <span class="checkout-sticky-bar__amount" id="sticky-total">TZS 0</span>
+  </div>
+  <button type="button"
+          class="btn btn-primary checkout-submit-btn"
+          id="checkout-submit-btn-mobile"
+          disabled
+          aria-label="Proceed to payment">
+    <i class="bi bi-lock me-1" aria-hidden="true"></i>
+    <span id="submit-btn-text-mobile">Select tickets</span>
+  </button>
+</div>
+
+{# ── USSD Pending Modal ── #}
+<div class="modal fade" id="ussdPendingModal" tabindex="-1"
+     data-bs-backdrop="static" data-bs-keyboard="false"
+     aria-labelledby="ussdPendingLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-body py-5 px-4">
+        <div class="ussd-pending-icon mb-4" aria-hidden="true">
+          <i class="bi bi-phone-vibrate"></i>
+        </div>
+        <h3 class="ussd-pending-title" id="ussdPendingLabel">
+          Check Your Phone
+        </h3>
+        <p class="ussd-pending-msg" id="ussd-message">
+          A payment prompt has been sent to your phone.<br>
+          Enter your mobile money PIN to complete the purchase.
+        </p>
+        <div class="d-flex align-items-center justify-content-center gap-2 mt-4">
+          <div class="spinner-border spinner-border-sm spinner-gold" role="status">
+            <span class="visually-hidden">Waiting for payment…</span>
+          </div>
+          <span class="ussd-pending-waiting">Waiting for confirmation…</span>
+        </div>
+        <button type="button"
+                class="btn btn-secondary btn-sm mt-4"
+                id="ussd-cancel-btn">
+          Cancel &amp; Go Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    window.TAMASHA = window.TAMASHA || {};
+    window.TAMASHA.checkout = {
+      checkoutUrl:  "{% url 'tickets:checkout' slug=event.slug %}",
+      csrfToken:    "{{ csrf_token }}",
+      isFreeEvent:  {% if ticket_types %}{% with tt=ticket_types|first %}{% if tt.is_free %}true{% else %}false{% endif %}{% endwith %}{% else %}false{% endif %},
+    };
+  </script>
+  <script src="{% static 'js/tickets/checkout.js' %}" defer></script>
+{% endblock %}

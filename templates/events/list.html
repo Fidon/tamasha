@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/events/list.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="events-list-page">
+
+  {% comment %}── Page Header ── {% endcomment %}
+  <div class="events-list-header">
+    <div class="container">
+      <div class="events-list-header__inner">
+        <div>
+          <p class="label-uppercase mb-2">Discover</p>
+          <h1 class="events-list-header__title">Upcoming Events</h1>
+          <p class="events-list-header__subtitle">
+            Concerts, festivals, nightlife and curated experiences across Tanzania.
+          </p>
+        </div>
+
+        {% comment %}Search bar {% endcomment %}
+        <form class="events-search-form" id="events-search-form" role="search" aria-label="Search events">
+          <div class="events-search-form__wrap">
+            <i class="bi bi-search events-search-form__icon" aria-hidden="true"></i>
+            <input type="search"
+                   id="events-search-input"
+                   name="q"
+                   class="form-control events-search-form__input"
+                   placeholder="Search events, artists, venues…"
+                   value="{{ active_filters.q }}"
+                   autocomplete="off"
+                   aria-label="Search events">
+            {% if active_filters.q %}
+              <button type="button"
+                      class="events-search-form__clear"
+                      id="search-clear-btn"
+                      aria-label="Clear search">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="events-list-layout">
+      {% comment %} Sidebar Filters {% endcomment %}
+      <aside class="events-filters" id="events-filters" aria-label="Filter events">
+        <div class="events-filters__header">
+          <span class="events-filters__title">Filters</span>
+          <button type="button"
+                  class="events-filters__reset {% if not active_filters.category and not active_filters.city and not active_filters.date_from and not active_filters.date_to and not active_filters.price_min and not active_filters.price_max and not active_filters.free and not active_filters.weekend %}d-none{% endif %}"
+                  id="filters-reset-btn"
+                  aria-label="Clear all filters">
+            Clear all
+          </button>
+        </div>
+
+        {% comment %} ── Shortcut chips ── {% endcomment %}
+        <div class="events-filters__section">
+          <div class="events-filters__chips">
+            <button type="button"
+                    class="events-filter-chip {% if active_filters.weekend == '1' %}active{% endif %}"
+                    data-filter="weekend"
+                    data-value="1"
+                    aria-pressed="{% if active_filters.weekend == '1' %}true{% else %}false{% endif %}">
+              <i class="bi bi-calendar-week me-1" aria-hidden="true"></i>This Weekend
+            </button>
+            <button type="button"
+                    class="events-filter-chip {% if active_filters.free == '1' %}active{% endif %}"
+                    data-filter="free"
+                    data-value="1"
+                    aria-pressed="{% if active_filters.free == '1' %}true{% else %}false{% endif %}">
+              <i class="bi bi-gift me-1" aria-hidden="true"></i>Free Events
+            </button>
+          </div>
+        </div>
+
+        {% comment %}── Category ── {% endcomment %}
+        <div class="events-filters__section">
+          <p class="events-filters__label">Category</p>
+          <div class="events-filters__category-list" role="listbox" aria-label="Event categories">
+            <button type="button"
+                    class="events-filter-category {% if not active_filters.category %}active{% endif %}"
+                    data-filter="category"
+                    data-value=""
+                    role="option"
+                    aria-selected="{% if not active_filters.category %}true{% else %}false{% endif %}">
+              All Categories
+            </button>
+            {% for cat in categories %}
+              <button type="button"
+                      class="events-filter-category {% if active_filters.category == cat.slug %}active{% endif %}"
+                      data-filter="category"
+                      data-value="{{ cat.slug }}"
+                      role="option"
+                      aria-selected="{% if active_filters.category == cat.slug %}true{% else %}false{% endif %}">
+                <i class="{{ cat.icon }} me-2" aria-hidden="true"></i>
+                {{ cat.name }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% comment %}── Date Range ── {% endcomment %}
+        <div class="events-filters__section">
+          <p class="events-filters__label">Date Range</p>
+          <div class="d-flex flex-column gap-2">
+            <div>
+              <label for="filter-date-from" class="events-filters__sublabel">From</label>
+              <input type="date"
+                     id="filter-date-from"
+                     class="form-control form-control-sm"
+                     data-filter="date_from"
+                     value="{{ active_filters.date_from }}"
+                     aria-label="From date">
+            </div>
+            <div>
+              <label for="filter-date-to" class="events-filters__sublabel">To</label>
+              <input type="date"
+                     id="filter-date-to"
+                     class="form-control form-control-sm"
+                     data-filter="date_to"
+                     value="{{ active_filters.date_to }}"
+                     aria-label="To date">
+            </div>
+          </div>
+        </div>
+
+        {% comment %}── City ── {% endcomment %}
+        <div class="events-filters__section">
+          <label for="filter-city" class="events-filters__label">City</label>
+          <input type="text"
+                 id="filter-city"
+                 class="form-control form-control-sm"
+                 data-filter="city"
+                 value="{{ active_filters.city }}"
+                 placeholder="e.g. Dar es Salaam"
+                 autocomplete="off"
+                 aria-label="Filter by city">
+        </div>
+
+        {% comment %}── Price Range ── {% endcomment %}
+        <div class="events-filters__section">
+          <p class="events-filters__label">Price Range (TZS)</p>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="number"
+                   id="filter-price-min"
+                   class="form-control form-control-sm"
+                   data-filter="price_min"
+                   value="{{ active_filters.price_min }}"
+                   placeholder="Min"
+                   min="0"
+                   aria-label="Minimum price">
+            <span class="events-filters__sublabel flex-shrink-0">to</span>
+            <input type="number"
+                   id="filter-price-max"
+                   class="form-control form-control-sm"
+                   data-filter="price_max"
+                   value="{{ active_filters.price_max }}"
+                   placeholder="Max"
+                   min="0"
+                   aria-label="Maximum price">
+          </div>
+        </div>
+
+      </aside>
+
+      {% comment %}────────────────────────────────────────────────────────
+         Main: Events Grid
+      ──────────────────────────────────────────────────────── {% endcomment %}
+      <main class="events-grid-wrap">
+
+        {% comment %}Mobile filter toggle {% endcomment %}
+        <div class="events-grid-toolbar d-flex align-items-center justify-content-between mb-4">
+          <p class="events-grid-count mb-0" id="events-count" aria-live="polite" aria-atomic="true">
+            {% if events %}
+              Showing events
+            {% else %}
+              {% comment %} No events found {% endcomment %}
+            {% endif %}
+          </p>
+          <button type="button"
+                  class="btn btn-secondary btn-sm d-lg-none"
+                  id="filters-toggle-btn"
+                  aria-controls="events-filters"
+                  aria-expanded="false">
+            <i class="bi bi-funnel me-1" aria-hidden="true"></i>Filters
+          </button>
+        </div>
+
+        {% comment %}Events grid {% endcomment %}
+        <div class="events-grid" id="events-grid" role="list">
+          {% if events %}
+            {% for event in events %}
+              <div role="listitem">
+                {% include "events/components/_event_card.html" with event=event %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% comment %}Empty state {% endcomment %}
+            <div class="events-empty" id="events-empty" aria-live="polite">
+              <div class="events-empty__icon">
+                <i class="bi bi-calendar-x" aria-hidden="true"></i>
+              </div>
+              <h2 class="events-empty__title">No events found</h2>
+              <p class="events-empty__text">
+                Try adjusting your filters or check back soon for new events.
+              </p>
+              <button type="button"
+                      class="btn btn-outline-primary"
+                      id="empty-reset-btn">
+                Clear all filters
+              </button>
+            </div>
+          {% endif %}
+        </div>
+
+        {% comment %}Infinite scroll sentinel + loader {% endcomment %}
+        <div id="scroll-sentinel" aria-hidden="true"></div>
+        <div class="events-load-more" id="load-more-loader" aria-live="polite" aria-label="Loading more events" hidden>
+          <div class="d-flex align-items-center justify-content-center gap-3 py-6">
+            <div class="spinner-border spinner-border-sm spinner-gold" role="status">
+              <span class="visually-hidden">Loading more events…</span>
+            </div>
+            <span class="events-load-more__text">Loading more events…</span>
+          </div>
+        </div>
+        <div class="events-end-message" id="events-end-message" hidden aria-live="polite">
+          <span>You've seen all events</span>
+        </div>
+
+      </main>
+    </div>{% comment %}/layout {% endcomment %}
+  </div>{% comment %}/container {% endcomment %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    window.TAMASHA = window.TAMASHA || {};
+    window.TAMASHA.eventsListUrl = "{% url 'events:list' %}";
+    window.TAMASHA.initialLastId = {{ initial_last_id|default:"null" }};
+    window.TAMASHA.hasMore       = {{ has_more|yesno:"true,false" }};
+    window.TAMASHA.activeFilters = {{ active_filters_json|safe }};
+  </script>
+  <script src="{% static 'js/events/list.js' %}" defer></script>
+{% endblock %}

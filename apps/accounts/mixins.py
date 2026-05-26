@@ -1,40 +1,64 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 
 
 class AnonymousRedirectMixin(LoginRequiredMixin):
     """
     Redirect unauthenticated users to login with ?next= preserved.
-    Subclasses LoginRequiredMixin — no extra config needed.
-    LOGIN_URL is set globally in settings.py as 'accounts:login'.
+    LOGIN_URL is set globally in settings as 'accounts:login'.
     """
     pass
 
 
 class VerifiedUserMixin(AnonymousRedirectMixin):
     """
-    Requires the user to be authenticated AND have a verified email.
+    Requires authenticated + email-verified user.
     Unverified users are redirected to the verification-sent page.
     """
 
     def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        # super() already redirects unauthenticated users
-        if request.user.is_authenticated and not request.user.email_verified:
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not request.user.email_verified:
             return redirect('accounts:verification_sent')
-        return response
+        return super().dispatch(request, *args, **kwargs)
 
 
 class OrganizerRequiredMixin(VerifiedUserMixin):
     """
-    Requires the user to be an approved organizer.
-    Raises 403 for authenticated non-organizers — not a redirect,
-    because silently redirecting organizer-only pages leaks information.
+    Requires an approved organizer account.
+
+    Checks authentication and organizer status BEFORE calling super(),
+    so the view body never executes for non-organizers.
+
+    Non-organizers are redirected to the become-organizer page with
+    an informative message rather than a hard 403, which would be
+    confusing for users who simply haven't applied yet.
     """
 
     def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        if request.user.is_authenticated and not request.user.is_approved_organizer:
-            raise PermissionDenied
-        return response
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        # Explicitly guard against missing organizer_profile relation
+        # (user.is_organizer=True but OrganizerProfile row absent is an
+        # admin data-integrity issue; handle it gracefully regardless)
+        is_approved = (
+            request.user.is_approved_organizer
+            and hasattr(request.user, 'organizer_profile')
+        )
+
+        if not is_approved:
+            messages.warning(
+                request,
+                _(
+                    'You need an approved organizer account to access this page. '
+                    'Apply below to get started.'
+                ),
+            )
+            return redirect('accounts:become_organizer')
+
+        return super().dispatch(request, *args, **kwargs)

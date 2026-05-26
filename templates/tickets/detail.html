@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/tickets/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ticket-detail-page">
+  <div class="container">
+
+    {# ── Order status banner ── #}
+    <div class="order-status-banner
+      {% if order.status == 'PAID' or order.status == 'FREE' %}order-status-banner--success
+      {% elif order.status == 'CANCELLED' %}order-status-banner--danger
+      {% else %}order-status-banner--warning{% endif %}">
+      <div class="order-status-banner__icon" aria-hidden="true">
+        {% if order.status == 'PAID' or order.status == 'FREE' %}
+          <i class="bi bi-check-circle-fill"></i>
+        {% elif order.status == 'CANCELLED' %}
+          <i class="bi bi-x-circle-fill"></i>
+        {% else %}
+          <i class="bi bi-clock"></i>
+        {% endif %}
+      </div>
+      <div>
+        {% if order.status == 'PAID' %}
+          <p class="order-status-banner__title">Payment Confirmed!</p>
+          <p class="order-status-banner__sub">
+            Your tickets are ready. Show the QR code at the venue entrance.
+          </p>
+        {% elif order.status == 'FREE' %}
+          <p class="order-status-banner__title">Registration Confirmed!</p>
+          <p class="order-status-banner__sub">
+            Your free tickets are ready. Show the QR code at the venue entrance.
+          </p>
+        {% elif order.status == 'CANCELLED' %}
+          <p class="order-status-banner__title">Order Cancelled</p>
+          <p class="order-status-banner__sub">This order has been cancelled.</p>
+        {% else %}
+          <p class="order-status-banner__title">Payment Pending</p>
+          <p class="order-status-banner__sub">We're waiting for payment confirmation.</p>
+        {% endif %}
+      </div>
+      <div class="order-status-banner__ref">
+        <span class="label-uppercase">Order</span>
+        <span class="order-status-banner__ref-val">{{ order.reference_short }}</span>
+      </div>
+    </div>
+
+    <div class="ticket-detail-layout">
+
+      {# ── Left: Event info + Tickets ── #}
+      <div class="ticket-detail-main">
+
+        {# Event summary #}
+        <div class="ticket-event-card">
+          {% if event.banner_display %}
+            <img src="{{ event.banner_display.url }}"
+                 alt="{{ event.title }}"
+                 class="ticket-event-card__banner">
+          {% endif %}
+          <div class="ticket-event-card__body">
+            <span class="badge bg-primary mb-2">{{ event.category.name }}</span>
+            <h2 class="ticket-event-card__title">{{ event.title }}</h2>
+            <div class="ticket-event-card__meta">
+              <div class="ticket-event-card__meta-item">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                <time datetime="{{ event.starts_at|date:'Y-m-d' }}">
+                  {{ event.starts_at|date:"l, d F Y" }}
+                </time>
+              </div>
+              <div class="ticket-event-card__meta-item">
+                <i class="bi bi-clock" aria-hidden="true"></i>
+                {{ event.starts_at|date:"H:i" }} – {{ event.ends_at|date:"H:i" }}
+              </div>
+              <div class="ticket-event-card__meta-item">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                {{ event.venue.name }}, {{ event.venue.city }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# Individual tickets with QR codes #}
+        {% if tickets %}
+          <h2 class="ticket-section-title">
+            Your Tickets
+            <span class="ticket-section-title__count">{{ tickets|length }}</span>
+          </h2>
+
+          <div class="tickets-grid">
+            {% for ticket in tickets %}
+              <article class="ticket-card {% if ticket.is_used %}ticket-card--used{% endif %}"
+                       aria-label="Ticket {{ forloop.counter }} — {{ ticket.ticket_type.name }}">
+                <div class="ticket-card__left">
+                  <div class="ticket-card__type-badge">
+                    {{ ticket.ticket_type.name }}
+                  </div>
+                  <h3 class="ticket-card__event">{{ event.title }}</h3>
+                  <div class="ticket-card__meta">
+                    <div>
+                      <span class="ticket-card__meta-label">Date</span>
+                      <span class="ticket-card__meta-val">
+                        {{ event.starts_at|date:"d M Y" }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="ticket-card__meta-label">Time</span>
+                      <span class="ticket-card__meta-val">
+                        {{ event.starts_at|date:"H:i" }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="ticket-card__meta-label">Venue</span>
+                      <span class="ticket-card__meta-val">
+                        {{ event.venue.name }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="ticket-card__meta-label">Holder</span>
+                      <span class="ticket-card__meta-val">
+                        {{ order.buyer_name }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ticket-card__token">
+                    #{{ ticket.token_short }}
+                  </div>
+                  {% if ticket.is_used %}
+                    <div class="ticket-card__used-badge" role="status">
+                      <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>
+                      Used
+                    </div>
+                  {% endif %}
+                </div>
+
+                {# Perforated divider #}
+                <div class="ticket-card__perforation" aria-hidden="true">
+                  <div class="ticket-card__perf-circle ticket-card__perf-circle--top"></div>
+                  <div class="ticket-card__perf-line"></div>
+                  <div class="ticket-card__perf-circle ticket-card__perf-circle--bottom"></div>
+                </div>
+
+                <div class="ticket-card__right">
+                  {% if ticket.qr_image %}
+                    <img src="{{ ticket.qr_image.url }}"
+                         alt="QR code for ticket {{ ticket.token_short }}"
+                         class="ticket-card__qr"
+                         width="140" height="140">
+                  {% else %}
+                    <div class="ticket-card__qr-placeholder" aria-label="QR code generating">
+                      <div class="spinner-border spinner-border-sm spinner-gold"
+                           role="status">
+                        <span class="visually-hidden">Generating QR…</span>
+                      </div>
+                      <span>Generating…</span>
+                    </div>
+                  {% endif %}
+                  <p class="ticket-card__scan-hint">Scan at entrance</p>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>{# /main #}
+
+      {# ── Right: Order summary ── #}
+      <aside class="ticket-detail-sidebar">
+        <div class="order-summary-card">
+          <h2 class="order-summary-card__title">Order Details</h2>
+
+          <dl class="order-summary-dl">
+            <dt>Reference</dt>
+            <dd class="text-gold font-semibold">{{ order.reference_short }}</dd>
+
+            <dt>Name</dt>
+            <dd>{{ order.buyer_name }}</dd>
+
+            <dt>Email</dt>
+            <dd>{{ order.buyer_email }}</dd>
+
+            <dt>Phone</dt>
+            <dd>{{ order.buyer_phone }}</dd>
+
+            <dt>Payment</dt>
+            <dd>{{ order.get_payment_method_display }}</dd>
+
+            {% if order.paid_at %}
+              <dt>Paid At</dt>
+              <dd>{{ order.paid_at|date:"d M Y, H:i" }}</dd>
+            {% endif %}
+          </dl>
+
+          <div class="order-summary-items">
+            {% for item in order.items.all %}
+              <div class="order-summary-item">
+                <div>
+                  <span class="order-summary-item__name">{{ item.ticket_type.name }}</span>
+                  <span class="order-summary-item__qty">× {{ item.quantity }}</span>
+                </div>
+                <span class="order-summary-item__price">
+                  {% if item.unit_price == 0 %}
+                    Free
+                  {% else %}
+                    TZS {{ item.subtotal|floatformat:0|intcomma }}
+                  {% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="order-summary-total">
+            <span>Total</span>
+            <span class="order-summary-total__val">
+              {% if order.gross_amount == 0 %}
+                Free
+              {% else %}
+                TZS {{ order.gross_amount|floatformat:0|intcomma }}
+              {% endif %}
+            </span>
+          </div>
+
+          <a href="{% url 'events:detail' slug=event.slug %}"
+             class="btn btn-secondary w-100 mt-4">
+            <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
+            Back to Event
+          </a>
+        </div>
+      </aside>
+
+    </div>{# /layout #}
+  </div>{# /container #}
+</section>
+{% endblock %}

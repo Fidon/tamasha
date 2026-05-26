@@ -1,0 +1,17 @@
+[
+  {"model": "events.tag", "pk": 1,  "fields": {"name": "Music",        "slug": "music",        "is_predefined": true}},
+  {"model": "events.tag", "pk": 2,  "fields": {"name": "Nightlife",    "slug": "nightlife",    "is_predefined": true}},
+  {"model": "events.tag", "pk": 3,  "fields": {"name": "Festival",     "slug": "festival",     "is_predefined": true}},
+  {"model": "events.tag", "pk": 4,  "fields": {"name": "Conference",   "slug": "conference",   "is_predefined": true}},
+  {"model": "events.tag", "pk": 5,  "fields": {"name": "Networking",   "slug": "networking",   "is_predefined": true}},
+  {"model": "events.tag", "pk": 6,  "fields": {"name": "Sports",       "slug": "sports",       "is_predefined": true}},
+  {"model": "events.tag", "pk": 7,  "fields": {"name": "Comedy",       "slug": "comedy",       "is_predefined": true}},
+  {"model": "events.tag", "pk": 8,  "fields": {"name": "Art",          "slug": "art",          "is_predefined": true}},
+  {"model": "events.tag", "pk": 9,  "fields": {"name": "Food & Drink", "slug": "food-drink",   "is_predefined": true}},
+  {"model": "events.tag", "pk": 10, "fields": {"name": "Theatre",      "slug": "theatre",      "is_predefined": true}},
+  {"model": "events.tag", "pk": 11, "fields": {"name": "Tech",         "slug": "tech",         "is_predefined": true}},
+  {"model": "events.tag", "pk": 12, "fields": {"name": "Fashion",      "slug": "fashion",      "is_predefined": true}},
+  {"model": "events.tag", "pk": 13, "fields": {"name": "Wellness",     "slug": "wellness",     "is_predefined": true}},
+  {"model": "events.tag", "pk": 14, "fields": {"name": "Religion",     "slug": "religion",     "is_predefined": true}},
+  {"model": "events.tag", "pk": 15, "fields": {"name": "Charity",      "slug": "charity",      "is_predefined": true}}
+]
